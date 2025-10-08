@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBanking.Api", "CoreBanking.Api\CoreBanking.Api.csproj", "{2F22CF35-4250-4146-961D-618AB559E7D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBanking.Application", "CoreBanking.Application\CoreBanking.Application.csproj", "{EF71340C-9DD2-4F46-939A-8C7CC898A09B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBanking.DTOs", "CoreBanking.DTOs\CoreBanking.DTOs.csproj", "{37915D40-E7DB-4FC0-AD76-BA96BF228EDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBanking.Domain", "CoreBanking.Domain\CoreBanking.Domain.csproj", "{D7E80224-1C9F-40B0-8781-69D2B4DEF020}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreBanking.Infrastructure", "CoreBanking.Infrastructure\CoreBanking.Infrastructure.csproj", "{1268B9AF-CB51-4A65-BBCC-66CF5C1A270C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C782FF8-DC7A-4050-91D5-06C84899F189}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CoreBanking.Api\Dockerfile = CoreBanking.Api\Dockerfile
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F22CF35-4250-4146-961D-618AB559E7D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F22CF35-4250-4146-961D-618AB559E7D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F22CF35-4250-4146-961D-618AB559E7D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F22CF35-4250-4146-961D-618AB559E7D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF71340C-9DD2-4F46-939A-8C7CC898A09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF71340C-9DD2-4F46-939A-8C7CC898A09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF71340C-9DD2-4F46-939A-8C7CC898A09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF71340C-9DD2-4F46-939A-8C7CC898A09B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37915D40-E7DB-4FC0-AD76-BA96BF228EDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37915D40-E7DB-4FC0-AD76-BA96BF228EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37915D40-E7DB-4FC0-AD76-BA96BF228EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37915D40-E7DB-4FC0-AD76-BA96BF228EDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7E80224-1C9F-40B0-8781-69D2B4DEF020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7E80224-1C9F-40B0-8781-69D2B4DEF020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7E80224-1C9F-40B0-8781-69D2B4DEF020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7E80224-1C9F-40B0-8781-69D2B4DEF020}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1268B9AF-CB51-4A65-BBCC-66CF5C1A270C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1268B9AF-CB51-4A65-BBCC-66CF5C1A270C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1268B9AF-CB51-4A65-BBCC-66CF5C1A270C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1268B9AF-CB51-4A65-BBCC-66CF5C1A270C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F690C091-90BA-4D7F-A887-164B86429BE3}
+	EndGlobalSection
+EndGlobal
