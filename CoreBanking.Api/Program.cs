@@ -119,6 +119,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapGet("/", () => "Smart ID Solution API is running!");// simple health check endpoint 
+app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
+
 
 authGroup.MapIdentityApi<Customer>();
 
