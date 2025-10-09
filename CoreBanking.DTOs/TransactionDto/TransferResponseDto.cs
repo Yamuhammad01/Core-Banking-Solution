@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.DTOs
+namespace CoreBanking.DTOs.TransactionDto
 {
     public class TransferResponseDto
     {

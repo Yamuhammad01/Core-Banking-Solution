@@ -1,7 +1,7 @@
 ﻿using CoreBanking.Application.Interfaces;
 using CoreBanking.Application.Services;
 using CoreBanking.Domain.Entities;
-using CoreBanking.DTOs;
+using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

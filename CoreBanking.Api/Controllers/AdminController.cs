@@ -1,5 +1,5 @@
 ﻿using CoreBanking.Application.Services;
-using CoreBanking.DTOs;
+using CoreBanking.DTOs.AccountDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

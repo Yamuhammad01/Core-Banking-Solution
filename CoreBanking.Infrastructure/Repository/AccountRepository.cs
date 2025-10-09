@@ -35,7 +35,7 @@ namespace CoreBanking.Infrastructure.Repository
                 .ToListAsync();
         }
 
-        public async Task<BankAccount> GetByUserIdAsync(string userId)
+        public async Task<BankAccount?> GetByUserIdAsync(string userId)
         {
             return await _dbContext.BankAccounts
                 .FirstOrDefaultAsync(a => a.CustomerId == userId);

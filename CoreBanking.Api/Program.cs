@@ -24,6 +24,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CoreBankingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// port configuration for Render deployment
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+
+
 
 builder.Services.AddIdentityApiEndpoints<Customer>()
     .AddEntityFrameworkStores<CoreBankingDbContext>()
@@ -119,7 +125,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapGet("/", () => "Smart ID Solution API is running!");// simple health check endpoint 
+app.MapGet("/", () => "Core Banking API is running");// simple health check endpoint 
 app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
 
 

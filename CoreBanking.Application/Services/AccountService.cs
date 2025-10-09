@@ -1,6 +1,6 @@
 ﻿using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Entities;
-using CoreBanking.DTOs;
+using CoreBanking.DTOs.AccountDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

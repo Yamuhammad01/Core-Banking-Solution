@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoreBanking.DTOs;
+using CoreBanking.DTOs.TransactionDto;
 
 namespace CoreBanking.Application.Interfaces
 {

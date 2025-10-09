@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using CoreBanking.DTOs;
 using CoreBanking.Domain.Entities;
 using CoreBanking.Application.Services;
 using Microsoft.EntityFrameworkCore;
 using CoreBanking.Infrastructure.Persistence;
 using CoreBanking.Infrastructure.Services;
+using CoreBanking.DTOs.AccountDto;
 
 
 namespace CoreBanking.Api.Controllers
