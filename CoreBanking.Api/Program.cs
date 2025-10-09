@@ -24,7 +24,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CoreBankingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// port configuration for Render deployment
+// port configuration for Render Deployment
+
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
