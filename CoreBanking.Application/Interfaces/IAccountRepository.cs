@@ -15,6 +15,9 @@ namespace CoreBanking.Application.Interfaces
         Task<IEnumerable<BankAccount>> GetByCustomerIdAsync(string customerId);
 
         Task<BankAccount?> GetByUserIdAsync(string userId);
+
+        Task<Customer?> GetUserIdAsync(string userId);
+
         Task<BankAccount?> GetByIdAsync(Guid id);
         Task UpdateAsync(BankAccount account);
     }

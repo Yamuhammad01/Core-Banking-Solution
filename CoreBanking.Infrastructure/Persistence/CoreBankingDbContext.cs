@@ -33,7 +33,15 @@ namespace CoreBanking.Infrastructure.Persistence
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-                  
+            builder.Entity<Transactions>()
+           .HasOne(al => al.BankAccounts)
+           .WithMany(s => s.Transactions)
+           .HasForeignKey(al => al.BankAccountId); 
+
+            builder.Entity<Transactions>()
+         .HasOne(al => al.Customers)
+         .WithMany(s => s.Transactions)
+         .HasForeignKey(al => al.UserId);
 
         }
 

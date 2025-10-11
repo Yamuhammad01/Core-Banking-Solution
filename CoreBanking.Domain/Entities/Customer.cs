@@ -14,5 +14,7 @@ namespace CoreBanking.Domain.Entities
         public string LastName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public BankAccount BankAccount { get; set; }
+
+        public ICollection<Transactions> Transactions { get; set; } = new List<Transactions>();
     }
 }

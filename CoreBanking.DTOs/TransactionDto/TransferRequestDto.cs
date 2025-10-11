@@ -10,7 +10,6 @@ namespace CoreBanking.DTOs.TransactionDto
     public class TransferRequestDto
     {
 
-
         public string DestinationAccountNumber { get; set; } = default!;
         public decimal Amount { get; set; }
         public string Description { get; set; } = string.Empty;

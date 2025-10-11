@@ -10,6 +10,6 @@ namespace CoreBanking.Application.Interfaces
     public interface ITransactionRepository
     {
         Task AddAsync(Transactions transaction);
-        public Task<IEnumerable<Transactions>> GetByAccountIdAsync(Guid accountId);
+        public Task<IEnumerable<Transactions>> GetByAccountIdAsync(string UserId);
     }
 }

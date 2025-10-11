@@ -42,20 +42,26 @@ namespace CoreBanking.Application.Services
 
             var reference = Guid.NewGuid().ToString("N");
 
-            await _txRepo.AddAsync(new Transactions
-            {
-                AccountId = source.Id,
-                Amount = request.Amount,
-                Type = TransactionType.TransferOut,
-                Description = request.Description,
-                Reference = reference
-            });
+           var newcustomer = await _accountRepo.GetUserIdAsync(userId);
+           
 
             await _txRepo.AddAsync(new Transactions
             {
-                AccountId = destination.Id,
+              
+                BankAccountId = source.Id,
+                UserId = source.CustomerId,
                 Amount = request.Amount,
-                Type = TransactionType.TransferIn,
+                Type = TransactionType.Debit,
+                Description = request.Description,
+                Reference = reference
+            });
+            await _txRepo.AddAsync(new Transactions
+            {
+
+                BankAccountId = destination.Id,
+                UserId = destination.CustomerId,
+                Amount = request.Amount,
+                Type = TransactionType.Credit,
                 Description = request.Description,
                 Reference = reference
             });

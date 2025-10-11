@@ -26,9 +26,9 @@ namespace CoreBanking.Infrastructure.Repository
         }
 
        
-        public async Task<IEnumerable<Transactions>> GetByAccountIdAsync(Guid accountId) =>
+        public async Task<IEnumerable<Transactions>> GetByAccountIdAsync(string UserId) =>
             await _dbContext.Transactions
-                .Where(t => t.AccountId == accountId)
+                .Where(t => t.UserId == UserId)
                 .OrderByDescending(t => t.CreatedAt)
                 .ToListAsync();
     }

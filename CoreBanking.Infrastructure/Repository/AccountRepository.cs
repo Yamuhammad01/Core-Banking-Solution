@@ -38,7 +38,14 @@ namespace CoreBanking.Infrastructure.Repository
         public async Task<BankAccount?> GetByUserIdAsync(string userId)
         {
             return await _dbContext.BankAccounts
+                .Include(a => a.Customers) // include AspNetUsers
                 .FirstOrDefaultAsync(a => a.CustomerId == userId);
+        }
+
+        public async Task<Customer?> GetUserIdAsync(string userId)
+        {
+            return await _dbContext.Customers
+                .FirstOrDefaultAsync(a => a.Id == userId);
         }
 
         public async Task<BankAccount?> GetByIdAsync(Guid id)
@@ -49,7 +56,7 @@ namespace CoreBanking.Infrastructure.Repository
         public async Task UpdateAsync(BankAccount account)
         {
             _dbContext.BankAccounts.Update(account);
-            await _dbContext.SaveChangesAsync();
+           // await _dbContext.SaveChangesAsync();
         }
 
         public async Task<BankAccount?> GetByAccountNumberAsync(string accountNumber) =>

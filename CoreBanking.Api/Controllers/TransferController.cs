@@ -16,7 +16,7 @@ namespace CoreBanking.Api.Controllers
         private readonly ITransferService _transferService;
         private readonly ITransactionRepository _repo;
         private readonly AccountService _accountService;
-        public TransferController(ITransferService transferService, ITransactionRepository transactionRepository, AccountService accountService) 
+        public TransferController(ITransferService transferService, ITransactionRepository transactionRepository, AccountService accountService)
         {
             _transferService = transferService;
             _repo = transactionRepository;
@@ -41,10 +41,17 @@ namespace CoreBanking.Api.Controllers
         }
 
         // get the transaction history for the user with the id
-        [HttpGet("transactionhistory{accountId}")]
-        public async Task<IActionResult> GetTransactions(Guid accountId)
+        [Authorize]
+        [HttpGet("transactionhistory")]
+        public async Task<IActionResult> GetTransactions()
         {
-            var txns = await _repo.GetByAccountIdAsync(accountId);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Invalid or missing token.");
+
+            var txns = await _repo.GetByAccountIdAsync(userId);
             return Ok(txns);
         }
 

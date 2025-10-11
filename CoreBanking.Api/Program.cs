@@ -15,6 +15,7 @@ using CoreBanking.Infrastructure.Identity;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,8 +27,8 @@ builder.Services.AddDbContext<CoreBankingDbContext>(options =>
 
 // port configuration for Render Deployment
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+//builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 
 
@@ -38,7 +39,12 @@ builder.Services.AddIdentityApiEndpoints<Customer>()
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Converts enums to strings in JSON 
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
