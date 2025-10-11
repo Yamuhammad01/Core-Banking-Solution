@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CoreBanking.Domain.Entities
@@ -16,9 +17,12 @@ namespace CoreBanking.Domain.Entities
         public string Status { get; set; } = "PendingApproval";
 
         public string CustomerId { get; set; } = default!; // Identity UserId (FK)
+
+        [JsonIgnore]
         public Customer Customers { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [JsonIgnore]
         public ICollection<Transactions> Transactions { get; set; } = new List<Transactions>();
     }
 }

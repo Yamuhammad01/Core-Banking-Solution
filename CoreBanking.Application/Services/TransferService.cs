@@ -23,7 +23,7 @@ namespace CoreBanking.Application.Services
         public async Task<TransferResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
         {
             var source = await _accountRepo.GetByUserIdAsync(userId);
-            var destination = await _accountRepo.GetByAccountNumberAsync(request.DestinationAccountNumber);
+            var destination = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
 
             if (source == null || destination == null)
                 return new() { Success = false, Message = "Invalid account number" };
@@ -52,7 +52,7 @@ namespace CoreBanking.Application.Services
                 UserId = source.CustomerId,
                 Amount = request.Amount,
                 Type = TransactionType.Debit,
-                Description = request.Description,
+                Description = request.Narration,
                 Reference = reference
             });
             await _txRepo.AddAsync(new Transactions
@@ -62,7 +62,7 @@ namespace CoreBanking.Application.Services
                 UserId = destination.CustomerId,
                 Amount = request.Amount,
                 Type = TransactionType.Credit,
-                Description = request.Description,
+                Description = request.Narration,
                 Reference = reference
             });
 

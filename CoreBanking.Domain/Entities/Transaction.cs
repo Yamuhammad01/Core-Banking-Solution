@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CoreBanking.Domain.Enums;
 
@@ -18,10 +19,14 @@ namespace CoreBanking.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
        public Guid BankAccountId { get; set; } //PK in BankAccount entity
-       public BankAccount BankAccounts { get; set; }
+
+        [JsonIgnore]
+        public BankAccount BankAccounts { get; set; }
 
 
         public string UserId { get; set; } //PK in BankAccount entity
+
+        [JsonIgnore]
         public Customer Customers { get; set; }
 
 
