@@ -36,8 +36,12 @@ builder.Services.AddDbContext<CoreBankingDbContext>(options =>
 
 
 builder.Services.AddIdentityApiEndpoints<Customer>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<CoreBankingDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders(); 
+/*builder.Services.AddIdentity<Customer, IdentityRole>()
+    .AddEntityFrameworkStores<CoreBankingDbContext>()
+    .AddDefaultTokenProviders();  */
 
 
 
@@ -123,7 +127,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = services.GetRequiredService<UserManager<Customer>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleIdentity.SeedAsync(userManager, roleManager);
 }

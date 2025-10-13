@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CoreBanking.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace CoreBanking.Application.Identity
                 await roleManager.CreateAsync(new IdentityRole("Customer"));
         }
         //seeded admin role
-        public static async Task SeedAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(UserManager<Customer> userManager, RoleManager<IdentityRole> roleManager)
         {
            
             string[] roles = { "Admin"};
@@ -38,7 +39,7 @@ namespace CoreBanking.Application.Identity
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                var newAdmin = new IdentityUser
+                var newAdmin = new Customer
                 {
                     UserName = "bank_admin",
                     Email = adminEmail,
