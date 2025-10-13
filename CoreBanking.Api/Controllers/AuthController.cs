@@ -83,6 +83,7 @@ namespace CoreBanking.Api.Controllers
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!result.Succeeded) return Unauthorized("Invalid credentials");
+            var roles = await _userManager.GetRolesAsync(user);
 
             var token = await _jwtService.GenerateTokenAsync(user);
 

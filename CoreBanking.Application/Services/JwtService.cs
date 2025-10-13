@@ -27,7 +27,7 @@ namespace CoreBanking.Application.Services
         public async Task<string> GenerateTokenAsync(Customer user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
-            //var roles = await _userManager.GetRolesAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
@@ -37,6 +37,11 @@ namespace CoreBanking.Application.Services
             };
 
             claims.AddRange(userClaims);
+
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
             //claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));

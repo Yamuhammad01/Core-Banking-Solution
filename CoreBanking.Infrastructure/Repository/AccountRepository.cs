@@ -61,6 +61,10 @@ namespace CoreBanking.Infrastructure.Repository
 
         public async Task<BankAccount?> GetByAccountNumberAsync(string accountNumber) =>
           await _dbContext.BankAccounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber);
+
+        public async Task<BankAccount?> GetByAccountNumberAndUserIdAsync(string UserId, string accountNumber) =>
+                      await _dbContext.BankAccounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber && a.CustomerId == UserId);
+
     }
 
 }

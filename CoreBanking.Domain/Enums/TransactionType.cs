@@ -9,7 +9,7 @@ namespace CoreBanking.Domain.Enums
     public enum TransactionType
     {
         Deposit = 0,
-        Withdrawal = 1,
+        Withdraw = 1,
         Debit = 2,
         Credit = 3,
         

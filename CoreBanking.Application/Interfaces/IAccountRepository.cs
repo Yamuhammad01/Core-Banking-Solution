@@ -12,6 +12,9 @@ namespace CoreBanking.Application.Interfaces
     {
         Task<BankAccount> CreateAsync(BankAccount account);
         Task<BankAccount?> GetByAccountNumberAsync(string accountNumber);
+
+        Task<BankAccount?> GetByAccountNumberAndUserIdAsync(string UserId, string accountNumber);
+
         Task<IEnumerable<BankAccount>> GetByCustomerIdAsync(string customerId);
 
         Task<BankAccount?> GetByUserIdAsync(string userId);

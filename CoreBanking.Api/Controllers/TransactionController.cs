@@ -11,16 +11,18 @@ namespace CoreBanking.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransferController : ControllerBase
+    public class TransactionController : ControllerBase
     {
-        private readonly ITransferService _transferService;
+        private readonly ITransactionService _transferService;
         private readonly ITransactionRepository _repo;
         private readonly AccountService _accountService;
-        public TransferController(ITransferService transferService, ITransactionRepository transactionRepository, AccountService accountService)
+        private readonly TransactionService _transactionService;
+        public TransactionController(ITransactionService transferService, ITransactionRepository transactionRepository, AccountService accountService, TransactionService transactionService)
         {
             _transferService = transferService;
             _repo = transactionRepository;
             _accountService = accountService;
+            _transactionService = transactionService;
         }
 
 
@@ -53,6 +55,34 @@ namespace CoreBanking.Api.Controllers
 
             var txns = await _repo.GetByAccountIdAsync(userId);
             return Ok(txns);
+        }
+
+        [HttpPost("deposit")]
+        //[Authorize(Roles = "Admin")]
+        [Authorize]
+        public async Task<IActionResult> Deposit([FromBody] DepositRequestDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Invalid or missing token.");
+
+            var result = await _transactionService.DepositAsync(userId, dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+
+        [HttpPost("withdraw")]
+        [Authorize] // any authenticated user
+        public async Task<IActionResult> Withdraw([FromBody] WithdrawalRequestDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("Invalid or missing token.");
+
+            var result = await _transactionService.WithdrawAsync(userId, dto);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
 
     }
