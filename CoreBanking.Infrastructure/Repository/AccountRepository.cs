@@ -5,7 +5,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Application;
-using CoreBanking.Application.Interfaces;
+using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Domain.Entities;
 using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +27,7 @@ namespace CoreBanking.Infrastructure.Repository
             await _dbContext.SaveChangesAsync();
             return account;
         }
+
 
         public async Task<IEnumerable<BankAccount>> GetByCustomerIdAsync(string customerId)
         {
@@ -67,5 +68,9 @@ namespace CoreBanking.Infrastructure.Repository
 
     }
 
+    public record CreatePin
+    {
+        public int Pin {  get; set; }
+    }
 }
 

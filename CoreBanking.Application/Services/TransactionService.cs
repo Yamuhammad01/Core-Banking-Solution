@@ -1,5 +1,4 @@
-﻿using CoreBanking.Application.Interfaces;
-using CoreBanking.Domain.Enums;
+﻿using CoreBanking.Domain.Enums;
 using CoreBanking.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.DTOs.TransactionDto;
+using Microsoft.AspNetCore.Identity;
+using Refit;
+using CoreBanking.Application.Responses;
+using CoreBanking.Application.Interfaces.IRepository;
+using CoreBanking.Application.Interfaces.IServices;
 
 namespace CoreBanking.Application.Services
 {
@@ -15,11 +19,17 @@ namespace CoreBanking.Application.Services
         private readonly IAccountRepository _accountRepo;
         private readonly ITransactionRepository _txRepo;
         private readonly IUnitOfWork _uow;
-        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork uow)
+        private readonly IPasswordHasher<Customer> _pinHasher;
+        private readonly UserManager<Customer> _userManager;
+        private readonly ITransactionPinService _pinService;
+        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork uow, IPasswordHasher<Customer> pinHasher, UserManager<Customer> userManager, ITransactionPinService pinService)
         {
             _accountRepo = accountRepository;
             _txRepo = transactionRepository;
             _uow = uow;
+            _pinHasher = pinHasher;
+            _userManager = userManager;
+            _pinService = pinService;
         }
 
         public async Task<TransferResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
@@ -83,7 +93,7 @@ namespace CoreBanking.Application.Services
 
             var account = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
             if (account == null)
-                return new() { Success = false, Message = "Account not found." };
+                return new() { Success = false, Message = "Invalid Account Number." };
 
             var reference = Guid.NewGuid().ToString("N");
 
@@ -102,7 +112,7 @@ namespace CoreBanking.Application.Services
                     UserId = account.CustomerId,
                     Type = TransactionType.Deposit,
                     Reference = reference,
-                    Description = request.Description ?? "Admin deposit",
+                    Description = request.Narration ?? "Admin deposit",
                    // PerformedByAdmin = adminId,
                     CreatedAt = DateTime.UtcNow
                 };
@@ -159,7 +169,7 @@ namespace CoreBanking.Application.Services
                     UserId = account.CustomerId,
                     Type = TransactionType.Deposit,
                     Reference = reference,
-                    Description = request.Description,
+                    Description = request.Narration,
                     //PerformedByAdmin = adminId.ToString(),
                     CreatedAt = DateTime.UtcNow
                 };
@@ -178,6 +188,10 @@ namespace CoreBanking.Application.Services
 
         public async Task<TransactionResponseDto> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
+            var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
+            if (!isPinValid)
+                return new () { Success = false, Message = "Invalid transaction PIN." };
+
             if (request.Amount <= 0) 
                 return new() { Success = false, Message = "Amount must be > 0" };
 
@@ -204,7 +218,7 @@ namespace CoreBanking.Application.Services
                     Amount = request.Amount,
                     Type = TransactionType.Withdraw,
                     Reference = reference,
-                    Description = request.Description,
+                    Description = request.Narration,
                     UserId = account.CustomerId,
                    // PerformedByUserId = userId,
                     CreatedAt = DateTime.UtcNow

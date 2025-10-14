@@ -10,6 +10,6 @@ namespace CoreBanking.DTOs.TransactionDto
     {
         public string AccountNumber { get; set; } = null!; 
         public decimal Amount { get; set; }
-        public string? Description { get; set; }
+        public string? Narration { get; set; }
     }
 }

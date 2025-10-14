@@ -1,4 +1,4 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;

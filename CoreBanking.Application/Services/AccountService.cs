@@ -1,4 +1,4 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.AccountDto;
 using System;

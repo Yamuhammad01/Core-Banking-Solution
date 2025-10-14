@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Domain.Entities;
-using CoreBanking.Application.Interfaces;
 using System.Security.Principal;
+using CoreBanking.Application.Interfaces.IRepository;
 
 namespace CoreBanking.Infrastructure.Repository
 {

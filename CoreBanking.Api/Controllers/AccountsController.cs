@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using CoreBanking.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using CoreBanking.DTOs.TransactionDto;
 
 namespace CoreBanking.Api.Controllers
 {
@@ -12,10 +13,12 @@ namespace CoreBanking.Api.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly AccountService _accountService;
+        private readonly TransactionPinService _pinService;
 
-        public AccountsController(AccountService accountService)
+        public AccountsController(AccountService accountService, TransactionPinService transactionPinService)
         {
             _accountService = accountService;
+            _pinService = transactionPinService;
         }
 
         private string GetUserId() =>
@@ -37,6 +40,15 @@ namespace CoreBanking.Api.Controllers
         public IActionResult GetDashboard()
         {
             return Ok("Welcome User — only you can see this.");
+        }
+
+        [Authorize]
+        [HttpPost("set-pin")]
+        public async Task<IActionResult> SetPin([FromBody] SetPinRequestDto request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _pinService.SetTransactionPinAsync(userId, request);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [Authorize]

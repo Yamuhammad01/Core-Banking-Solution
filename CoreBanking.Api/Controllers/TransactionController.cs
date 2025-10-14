@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Interfaces.IRepository;
+using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.TransactionDto;
@@ -57,8 +58,7 @@ namespace CoreBanking.Api.Controllers
             return Ok(txns);
         }
 
-        [HttpPost("deposit")]
-        //[Authorize(Roles = "Admin")]
+       /* [HttpPost("deposit")]
         [Authorize]
         public async Task<IActionResult> Deposit([FromBody] DepositRequestDto dto)
         {
@@ -69,7 +69,7 @@ namespace CoreBanking.Api.Controllers
 
             var result = await _transactionService.DepositAsync(userId, dto);
             return result.Success ? Ok(result) : BadRequest(result);
-        }
+        } */
 
 
         [HttpPost("withdraw")]

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Domain.Entities;
 
-namespace CoreBanking.Application.Interfaces
+namespace CoreBanking.Application.Interfaces.IRepository
 {
     public interface IAccountRepository
     {

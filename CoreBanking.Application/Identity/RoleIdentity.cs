@@ -10,33 +10,23 @@ namespace CoreBanking.Application.Identity
 {
     public class RoleIdentity
     {
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
-        {
-            if (!await roleManager.RoleExistsAsync("Admin"))
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-
-            if (!await roleManager.RoleExistsAsync("Customer"))
-                await roleManager.CreateAsync(new IdentityRole("Customer"));
-        }
-        //seeded admin role
         public static async Task SeedAsync(UserManager<Customer> userManager, RoleManager<IdentityRole> roleManager)
         {
-           
-            string[] roles = { "Admin"};
+            string[] roles = { "Admin" };
 
+            //  Ensure roles exist
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
-                {
                     await roleManager.CreateAsync(new IdentityRole(role));
-                }
             }
 
-            //  Create default admin user if it doesn't exist
+            // Create default admin user
             string adminEmail = "admin@corebanking.com";
-            string adminPassword = "Admin@123";  // admin password
+            string adminPassword = "Admin@123@$";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
             if (adminUser == null)
             {
                 var newAdmin = new Customer
@@ -51,6 +41,18 @@ namespace CoreBanking.Application.Identity
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(newAdmin, "Admin");
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to create admin: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+            else
+            {
+                // Ensure admin has the Admin role even if user already exists
+                if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
         }

@@ -28,8 +28,5 @@ namespace CoreBanking.Domain.Entities
 
         [JsonIgnore]
         public Customer Customers { get; set; }
-
-
-
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using CoreBanking.DTOs;
 using CoreBanking.Api.Swagger;
 using CoreBanking.Domain.Entities;
-using CoreBanking.Application.Interfaces;
 using CoreBanking.Infrastructure.Repository;
 using CoreBanking.Application.Services;
 using CoreBanking.Infrastructure.Identity;
@@ -18,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 using System.Security.Claims;
 using CoreBanking.Application.Identity;
+using CoreBanking.Application.Interfaces.IRepository;
+using CoreBanking.Application.Interfaces.IServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,12 +58,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<TransactionPinService>();
 
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));

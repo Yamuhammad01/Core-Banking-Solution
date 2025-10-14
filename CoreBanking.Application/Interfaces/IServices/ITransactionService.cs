@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreBanking.Application.Responses;
 using CoreBanking.DTOs.TransactionDto;
+using Octokit.Internal;
+using Refit;
 
-namespace CoreBanking.Application.Interfaces
+namespace CoreBanking.Application.Interfaces.IServices
 {
     public interface ITransactionService
     {
