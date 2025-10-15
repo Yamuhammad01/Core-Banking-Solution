@@ -36,6 +36,18 @@ namespace CoreBanking.Application.Services
             if (string.IsNullOrEmpty(request.Pin))
                 return new ApiResponses(false, "Please input your transaction pin");
 
+            //check if pin is exactly 4 digits
+            if (request.Pin.Length != 4)
+            {
+                return new ApiResponses(false, "Transaction PIN must be 4 digits.");
+            }
+
+            // check if the pin contain a character
+            if (!request.Pin.All(char.IsDigit))
+            {
+                return new ApiResponses(false, "Transaction PIN must contain only numbers.");
+            }
+
             //check if a pin already exist
             if (!string.IsNullOrEmpty(user.TransactionPinHash))
                 return new ApiResponses(false, "Transaction PIN already exists");
