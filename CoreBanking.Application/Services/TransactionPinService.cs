@@ -39,13 +39,13 @@ namespace CoreBanking.Application.Services
             //check if pin is exactly 4 digits
             if (request.Pin.Length != 4)
             {
-                return new ApiResponses(false, "Transaction PIN must be 4 digits.");
+                return new ApiResponses(false, "Transaction PIN must be 4 digits");
             }
 
             // check if the pin contain a character
             if (!request.Pin.All(char.IsDigit))
             {
-                return new ApiResponses(false, "Transaction PIN must contain only numbers.");
+                return new ApiResponses(false, "Transaction PIN must contain only numbers");
             }
 
             //check if a pin already exist
