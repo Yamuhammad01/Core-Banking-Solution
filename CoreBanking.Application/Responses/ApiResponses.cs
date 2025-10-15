@@ -11,25 +11,23 @@ namespace CoreBanking.Application.Responses
     {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public object Data { get; set; }
 
         public ApiResponses() { }
 
-        public ApiResponses(bool success, string message = null, object data = null)
+        public ApiResponses(bool success, string message = null)
         {
             Success = success;
             Message = message;
-            Data = data;
         }
 
-        public static ApiResponses SuccessResponse(string message = "Request successful", object data = null)
+        public static ApiResponses SuccessResponse(string message = "Request successful")
         {
-            return new ApiResponses(true, message, data);
+            return new ApiResponses(true, message);
         }
 
         public static ApiResponses FailResponse(string message = "Request failed")
         {
-            return new ApiResponses(false, message, null);
+            return new ApiResponses(false, message);
         }
     }
 }

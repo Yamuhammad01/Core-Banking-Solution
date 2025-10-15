@@ -13,6 +13,6 @@ namespace CoreBanking.DTOs.AccountDto
         public string AccountType { get; set; } = default!;
         public decimal Balance { get; set; }
         public string Status { get; set; } = default!;
-        public DateTime CreatedAt { get; set; }
+        public string Currency {  get; set; } 
     }
 }

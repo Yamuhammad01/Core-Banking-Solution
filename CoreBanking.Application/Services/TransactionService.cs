@@ -34,6 +34,10 @@ namespace CoreBanking.Application.Services
 
         public async Task<TransferResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
         {
+            var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
+            if (!isPinValid)
+                return new() { Success = false, Message = "Invalid transaction PIN" };
+
             var source = await _accountRepo.GetByUserIdAsync(userId);
             var destination = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
 
@@ -139,9 +143,6 @@ namespace CoreBanking.Application.Services
             }
         }
 
-
-
-
         public async Task<TransactionResponseDto> DepositAsync(string userId, DepositRequestDto request)
         {
             if (request.Amount <= 0) 
@@ -185,15 +186,15 @@ namespace CoreBanking.Application.Services
                 return new TransactionResponseDto { Success = false, Message = $"Deposit failed: {ex.Message}" };
             }
         }
-
+        // withdrawal service
         public async Task<TransactionResponseDto> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
             var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
             if (!isPinValid)
-                return new () { Success = false, Message = "Invalid transaction PIN." };
+                return new () { Success = false, Message = "Invalid transaction PIN" };
 
             if (request.Amount <= 0) 
-                return new() { Success = false, Message = "Amount must be > 0" };
+                return new() { Success = false, Message = "Amount must be greater than 0" };
 
             var account = await _accountRepo.GetByUserIdAsync(userId);
             if (account == null) 
@@ -227,12 +228,12 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                return new TransactionResponseDto { Success = true, Message = "Withdrawal successful.", Reference = reference, NewBalance = account.Balance };
+                return new TransactionResponseDto { Success = true, Message = "Withdrawal successful", Reference = reference, NewBalance = account.Balance };
             }
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
-                return new TransactionResponseDto { Success = false, Message = $"Withdrawal failed: {ex.Message}" };
+                return new TransactionResponseDto { Success = false, Message = $"Withdrawal failed {ex.Message}" };
             }
         }
 

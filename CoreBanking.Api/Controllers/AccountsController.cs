@@ -5,6 +5,7 @@ using System.Security.Claims;
 using CoreBanking.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using CoreBanking.DTOs.TransactionDto;
+using CoreBanking.DTOs.AccountDto;
 
 namespace CoreBanking.Api.Controllers
 {
@@ -57,7 +58,17 @@ namespace CoreBanking.Api.Controllers
         {
             var customerId = GetUserId();
             var accounts = await _accountService.GetAccountsAsync(customerId);
-            return Ok(accounts);
+
+            var accountDtos = accounts.Select(t => new GetAccountDto
+            {
+                Id = t.Id,
+                AccountNumber = t.AccountNumber,
+                AccountType = t.AccountType,
+                Balance = t.Balance,
+                Currency = t.Currency,
+                Status = t.Status
+            }).ToList();
+                return Ok(accountDtos);
         }
     }
 }

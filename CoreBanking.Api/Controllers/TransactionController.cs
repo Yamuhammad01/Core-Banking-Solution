@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using CoreBanking.Domain.Enums;
 
 namespace CoreBanking.Api.Controllers
 {
@@ -55,7 +56,21 @@ namespace CoreBanking.Api.Controllers
                 return Unauthorized("Invalid or missing token.");
 
             var txns = await _repo.GetByAccountIdAsync(userId);
-            return Ok(txns);
+
+            if (txns == null || !txns.Any())
+                return NotFound("You dont have a transaction history yet");
+
+            var transactionDtos = txns.Select(t => new TransactionHistoryDto
+            {
+                Id = t.Id,
+                Amount = t.Amount,
+                Type = t.Type.ToString(),
+                Reference = t.Reference,
+                Description = t.Description
+            }).ToList();
+
+          
+            return Ok(transactionDtos);
         }
 
        /* [HttpPost("deposit")]

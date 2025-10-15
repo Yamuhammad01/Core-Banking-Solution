@@ -24,17 +24,27 @@ namespace CoreBanking.Application.Services
 
         public async Task<ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request)
         {
+            // pin validation 
             if (request.Pin != request.ConfirmPin)
                 return new ApiResponses(false, "PINs do not match.");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return new ApiResponses(false, "User not found.");
+                return new ApiResponses(false, "User not found");
 
+            //check of user input an empty pin
+            if (string.IsNullOrEmpty(request.Pin))
+                return new ApiResponses(false, "Please input your transaction pin");
+
+            //check if a pin already exist
+            if (!string.IsNullOrEmpty(user.TransactionPinHash))
+                return new ApiResponses(false, "Transaction PIN already exists");
+
+            //Hash the new pin
             user.TransactionPinHash = _pinHasher.HashPassword(user, request.Pin);
             await _userManager.UpdateAsync(user);
 
-            return new ApiResponses(true, "Transaction PIN set successfully.");
+            return new ApiResponses(true, "Transaction PIN set successfully");
         }
 
         public async Task<bool> VerifyTransactionPinAsync(string userId, string pin)
