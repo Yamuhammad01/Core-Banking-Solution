@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using CoreBanking.Infrastructure.Persistence;
 using CoreBanking.Infrastructure.Services;
 using CoreBanking.DTOs.AccountDto;
+using CoreBanking.Application.Interfaces.IServices;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 namespace CoreBanking.Api.Controllers
@@ -19,12 +21,14 @@ namespace CoreBanking.Api.Controllers
         private readonly SignInManager<Customer> _signInManager;
         private readonly JwtService _jwtService;
         private readonly CoreBankingDbContext _context;
-        public AuthController(UserManager<Customer> userManager, SignInManager<Customer> signInManager, JwtService jwtService, CoreBankingDbContext coreBankingDbContext)
+        private readonly IEmailSenderr _emailSender;
+        public AuthController(UserManager<Customer> userManager, SignInManager<Customer> signInManager, JwtService jwtService, CoreBankingDbContext coreBankingDbContext, IEmailSenderr emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _context = coreBankingDbContext;
+            _emailSender = emailSender;
         }
         [HttpPost("customer/register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
@@ -66,11 +70,21 @@ namespace CoreBanking.Api.Controllers
             _context.BankAccounts.Add(bankAccount);
             await _context.SaveChangesAsync();
 
+            var message = new Message(
+                new string[] { "idrismuhd418@gmail.com" },
+                "Test email",
+                "This is the content from our email."
+            );
+
+            await _emailSender.SendEmailAsync(message);
+
+          //  return Ok("Email has been sent successfully!");
 
             return Ok(new
             {
                 message = "User registered successfully",
                 email = user.Email
+                
             });
         }
 

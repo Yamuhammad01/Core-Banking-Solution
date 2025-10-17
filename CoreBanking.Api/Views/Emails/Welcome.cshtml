@@ -1,0 +1,14 @@
+﻿@model dynamic
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome to MyBank</title>
+</head>
+<body>
+    <h2>Hi @Model.Name,</h2>
+    <p>Welcome to MyBank — your account has been created successfully.</p>
+    <p>You can login and manage your funds securely. If you need assistance, contact <a href="mailto:@Model.SupportEmail">@Model.SupportEmail</a>.</p>
+    <p>— The MyBank Team</p>
+</body>
+</html>

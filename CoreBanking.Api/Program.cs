@@ -19,6 +19,11 @@ using System.Security.Claims;
 using CoreBanking.Application.Identity;
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
+using System.Net.Mail;
+using System.Net;
+using CoreBanking.Api.Extensions;
+using CoreBanking.Infrastructure.Configuration;
+using Microsoft.Extensions.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,13 +33,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CoreBankingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 // port configuration for Render Deployment
 
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 //builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-
-
-
 
 builder.Services.AddIdentityApiEndpoints<Customer>()
     .AddRoles<IdentityRole>()
@@ -43,8 +47,6 @@ builder.Services.AddIdentityApiEndpoints<Customer>()
 /*builder.Services.AddIdentity<Customer, IdentityRole>()
     .AddEntityFrameworkStores<CoreBankingDbContext>()
     .AddDefaultTokenProviders();  */
-
-
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -59,6 +61,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TransactionPinService>();
+builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -72,6 +75,8 @@ builder.Services.Configure<JwtSettings>(
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
+
+builder.Services.AddFluentEmailConfiguration(builder.Configuration);
 
 
 builder.Services.AddAuthentication(options =>

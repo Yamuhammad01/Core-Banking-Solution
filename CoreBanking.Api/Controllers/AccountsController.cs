@@ -6,6 +6,8 @@ using CoreBanking.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using CoreBanking.DTOs.TransactionDto;
 using CoreBanking.DTOs.AccountDto;
+using CoreBanking.Application.Interfaces.IServices;
+using CoreBanking.Infrastructure.Services;
 
 namespace CoreBanking.Api.Controllers
 {
@@ -15,11 +17,13 @@ namespace CoreBanking.Api.Controllers
     {
         private readonly AccountService _accountService;
         private readonly TransactionPinService _pinService;
+        private readonly IEmailSenderr _emailSender;
 
-        public AccountsController(AccountService accountService, TransactionPinService transactionPinService)
+        public AccountsController(AccountService accountService, TransactionPinService transactionPinService, IEmailSenderr emailService)
         {
             _accountService = accountService;
             _pinService = transactionPinService;
+            _emailSender = emailService;
         }
 
         private string GetUserId() =>
@@ -41,6 +45,20 @@ namespace CoreBanking.Api.Controllers
         public IActionResult GetDashboard()
         {
             return Ok("Welcome User — only you can see this.");
+        }
+
+        [HttpGet("send-email")]
+        public async Task <IActionResult> SendEmail()
+        {
+            var message = new Message(
+                new string[] { "idrismuhd418@gmail.com" },
+                "Test email",
+                "This is the content from our email."
+            );
+
+            await _emailSender.SendEmailAsync(message);
+
+            return Ok("Email has been sent successfully!");
         }
 
         [Authorize]

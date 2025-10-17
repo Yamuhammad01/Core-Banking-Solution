@@ -13,8 +13,8 @@ namespace CoreBanking.Domain.Entities
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
-        public string? TransactionPin { get; set; } // hashed PIN
-        public bool HasSetPin => !string.IsNullOrEmpty(TransactionPin);
+        public string? TransactionPinHash { get; set; } // hashed PIN
+        public bool HasSetPin => !string.IsNullOrEmpty(TransactionPinHash);
         public BankAccount BankAccount { get; set; }
 
         public ICollection<Transactions> Transactions { get; set; } = new List<Transactions>();
