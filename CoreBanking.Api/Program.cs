@@ -24,6 +24,7 @@ using System.Net;
 using CoreBanking.Api.Extensions;
 using CoreBanking.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
+using CoreBanking.Infrastructure.EmailServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,6 +63,9 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TransactionPinService>();
 builder.Services.AddScoped<IEmailSenderr, EmailSender>();
+builder.Services.AddScoped(sp =>
+    new EmailTemplateService(builder.Environment.ContentRootPath));
+
 
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

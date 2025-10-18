@@ -9,6 +9,7 @@ using CoreBanking.Infrastructure.Services;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using CoreBanking.Infrastructure.EmailServices;
 
 
 namespace CoreBanking.Api.Controllers
@@ -22,13 +23,15 @@ namespace CoreBanking.Api.Controllers
         private readonly JwtService _jwtService;
         private readonly CoreBankingDbContext _context;
         private readonly IEmailSenderr _emailSender;
-        public AuthController(UserManager<Customer> userManager, SignInManager<Customer> signInManager, JwtService jwtService, CoreBankingDbContext coreBankingDbContext, IEmailSenderr emailSender)
+        private readonly EmailTemplateService _emailTemplateService;
+        public AuthController(UserManager<Customer> userManager, SignInManager<Customer> signInManager, JwtService jwtService, CoreBankingDbContext coreBankingDbContext, IEmailSenderr emailSender, EmailTemplateService emailTemplateService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _context = coreBankingDbContext;
             _emailSender = emailSender;
+            _emailTemplateService = emailTemplateService;
         }
         [HttpPost("customer/register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
@@ -70,19 +73,21 @@ namespace CoreBanking.Api.Controllers
             _context.BankAccounts.Add(bankAccount);
             await _context.SaveChangesAsync();
 
+            var emailBody = await _emailTemplateService.GetWelcomeTemplateAsync(
+              user.FirstName, user.LastName, bankAccount.AccountNumber, bankAccount.Currency); // get the placeholder to use in the template
+
             var message = new Message(
-                new string[] { "idrismuhd418@gmail.com" },
-                "Test email",
-                "This is the content from our email."
+                new string[] { register.Email },
+                "Welcome to CoreBanking",
+                emailBody
             );
+
 
             await _emailSender.SendEmailAsync(message);
 
-          //  return Ok("Email has been sent successfully!");
-
             return Ok(new
             {
-                message = "User registered successfully",
+                message = "User registered successfully, welcome email has been sent",
                 email = user.Email
                 
             });
