@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MimeKit;
+using CoreBanking.Infrastructure.EmailServices;
 
 namespace CoreBanking.Application.Services
 {

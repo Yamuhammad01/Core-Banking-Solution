@@ -5,7 +5,7 @@ using CoreBanking.Domain.Entities;
 using CoreBanking.Application.Services;
 using Microsoft.EntityFrameworkCore;
 using CoreBanking.Infrastructure.Persistence;
-using CoreBanking.Infrastructure.Services;
+using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;

@@ -18,4 +18,8 @@
     <ProjectReference Include="..\CoreBanking.DTOs\CoreBanking.DTOs.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CommandHandlers\" />
+  </ItemGroup>
+
 </Project>

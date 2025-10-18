@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using CoreBanking.DTOs.TransactionDto;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
-using CoreBanking.Infrastructure.Services;
+using CoreBanking.Infrastructure.EmailServices;
 
 namespace CoreBanking.Api.Controllers
 {

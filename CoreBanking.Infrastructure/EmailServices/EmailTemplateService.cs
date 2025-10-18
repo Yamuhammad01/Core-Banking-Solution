@@ -35,5 +35,40 @@ namespace CoreBanking.Infrastructure.EmailServices
 
             return template;
         }
+
+
+        public async Task<string> GetTransactionTemplateAsync(
+                 string firstName,
+                 string transactionType,
+                 decimal amount,
+               string accountNumber,
+               string reference,
+               decimal balance,
+               DateTime date)
+        {
+            var path = Path.Combine(
+                Directory.GetParent(_contentRootPath)!.FullName,
+                "CoreBanking.Infrastructure",
+                "EmailTemplates",
+                "TransactionAlert.html"
+            );
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Email template not found at {path}");
+
+            var template = await File.ReadAllTextAsync(path);
+
+            template = template.Replace("{{FirstName}}", firstName)
+                               .Replace("{{TransactionType}}", transactionType)
+                               .Replace("{{Amount}}", amount.ToString("N2"))
+                               .Replace("{{AccountNumber}}", accountNumber)
+                               .Replace("{{Reference}}", reference)
+                               .Replace("{{Balance}}", balance.ToString("N2"))
+                               .Replace("{{Date}}", date.ToString("dd MMM yyyy, hh:mm tt"))
+                               .Replace("{{Year}}", DateTime.UtcNow.Year.ToString());
+
+            return template;
+        }
+
     }
 }

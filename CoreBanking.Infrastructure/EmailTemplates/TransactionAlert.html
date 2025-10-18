@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; color: #333;">
+    <h2>💳 {{TransactionType}} Alert</h2>
+    <p>Hello {{FirstName}},</p>
+
+    <p>A {{TransactionType}} transaction has occurred on your account.</p>
+
+    <table style="border-collapse: collapse; width: 100%;">
+        <tr>
+            <td><strong>Amount:</strong></td>
+            <td>₦{{Amount}}</td>
+        </tr>
+        <tr>
+            <td><strong>Account Number:</strong></td>
+            <td>{{AccountNumber}}</td>
+        </tr>
+        <tr>
+            <td><strong>Reference:</strong></td>
+            <td>{{Reference}}</td>
+        </tr>
+        <tr>
+            <td><strong>Date:</strong></td>
+            <td>{{Date}}</td>
+        </tr>
+        <tr>
+            <td><strong>Available Balance:</strong></td>
+            <td>₦{{Balance}}</td>
+        </tr>
+    </table>
+
+    <p>Thank you for banking with CoreBanking!</p>
+    <footer style="margin-top: 20px; font-size: 0.9em; color: #777;">
+        &copy; {{Year}} CoreBanking. All rights reserved.
+    </footer>
+</body>
+</html>

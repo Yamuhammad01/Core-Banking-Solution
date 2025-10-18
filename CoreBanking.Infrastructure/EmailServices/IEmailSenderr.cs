@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.DTOs.AccountDto;
-using CoreBanking.Infrastructure.Services;
+using CoreBanking.Infrastructure.EmailServices;
 
 namespace CoreBanking.Application.Interfaces.IServices
 {

@@ -25,6 +25,7 @@ using CoreBanking.Api.Extensions;
 using CoreBanking.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using CoreBanking.Infrastructure.EmailServices;
+using CoreBanking.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +74,8 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
+builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
+
 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));

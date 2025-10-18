@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using CoreBanking.Domain.Enums;
+using CoreBanking.Infrastructure.EmailServices;
+using CoreBanking.Infrastructure.EmailServices;
+using Microsoft.Win32;
+using Octokit;
 
 namespace CoreBanking.Api.Controllers
 {
@@ -19,12 +23,14 @@ namespace CoreBanking.Api.Controllers
         private readonly ITransactionRepository _repo;
         private readonly AccountService _accountService;
         private readonly TransactionService _transactionService;
-        public TransactionController(ITransactionService transferService, ITransactionRepository transactionRepository, AccountService accountService, TransactionService transactionService)
+        private readonly EmailTemplateService _emailTemplateService;
+        public TransactionController(ITransactionService transferService, ITransactionRepository transactionRepository, AccountService accountService, TransactionService transactionService, EmailTemplateService emailTemplateService)
         {
             _transferService = transferService;
             _repo = transactionRepository;
             _accountService = accountService;
             _transactionService = transactionService;
+            _emailTemplateService = emailTemplateService;
         }
 
 

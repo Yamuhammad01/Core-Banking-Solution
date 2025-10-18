@@ -11,6 +11,8 @@ using Refit;
 using CoreBanking.Application.Responses;
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
+using Microsoft.Win32;
+using Octokit;
 
 namespace CoreBanking.Application.Services
 {
@@ -22,7 +24,9 @@ namespace CoreBanking.Application.Services
         private readonly IPasswordHasher<Customer> _pinHasher;
         private readonly UserManager<Customer> _userManager;
         private readonly ITransactionPinService _pinService;
-        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork uow, IPasswordHasher<Customer> pinHasher, UserManager<Customer> userManager, ITransactionPinService pinService)
+        private readonly ITransactionEmailService _transactionEmailService;
+
+        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork uow, IPasswordHasher<Customer> pinHasher, UserManager<Customer> userManager, ITransactionPinService pinService, ITransactionEmailService transactionEmailService)
         {
             _accountRepo = accountRepository;
             _txRepo = transactionRepository;
@@ -30,6 +34,7 @@ namespace CoreBanking.Application.Services
             _pinHasher = pinHasher;
             _userManager = userManager;
             _pinService = pinService;
+            _transactionEmailService = transactionEmailService;
         }
 
         public async Task<TransferResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
@@ -197,6 +202,7 @@ namespace CoreBanking.Application.Services
                 return new() { Success = false, Message = "Amount must be greater than 0" };
 
             var account = await _accountRepo.GetByUserIdAsync(userId);
+            var customer = await _accountRepo.GetUserIdAsync(userId);
             if (account == null) 
                 return new() { Success = false, Message = "Source account not found." };
 
@@ -221,20 +227,39 @@ namespace CoreBanking.Application.Services
                     Reference = reference,
                     Description = request.Narration,
                     UserId = account.CustomerId,
-                   // PerformedByUserId = userId,
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                return new TransactionResponseDto { Success = true, Message = "Withdrawal successful", Reference = reference, NewBalance = account.Balance };
+                //  Send Email Alert using helper method
+                await _transactionEmailService.SendTransactionEmailAsync(
+                    email: customer.Email,
+                    firstName: customer.FirstName,
+                    transactionType: "Withdrawal",
+                    amount: request.Amount,
+                    accountNumber: account.AccountNumber,
+                    reference: reference,
+                    balance: account.Balance,
+                    date: DateTime.UtcNow 
+                );
+
+                return new TransactionResponseDto
+                {
+                    Success = true,
+                    Message = "Withdrawal successful",
+                    Reference = reference,
+                    NewBalance = account.Balance
+                };
             }
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
                 return new TransactionResponseDto { Success = false, Message = $"Withdrawal failed {ex.Message}" };
             }
+
+
         }
 
     }
