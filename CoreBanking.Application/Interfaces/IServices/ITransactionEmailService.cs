@@ -11,11 +11,13 @@ namespace CoreBanking.Application.Interfaces.IServices
         Task SendTransactionEmailAsync(
             string email,
             string firstName,
+            string lastName,
             string transactionType,
             decimal amount,
             string accountNumber,
             string reference,
             decimal balance,
-            DateTime date);
+            DateTime date,
+            string senderFullName = null);
     }
 }

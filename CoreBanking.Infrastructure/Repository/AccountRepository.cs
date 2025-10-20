@@ -28,6 +28,15 @@ namespace CoreBanking.Infrastructure.Repository
             return account;
         }
 
+        //  Fetch the user associated with a specific account
+        public async Task<Customer> GetUserByAccountIdAsync(Guid accountId)
+        {
+            var account = await _dbContext.BankAccounts
+                .Include(a => a.Customers)
+                .FirstOrDefaultAsync(a => a.Id == accountId);
+
+            return account?.Customers;
+        }
 
         public async Task<IEnumerable<BankAccount>> GetByCustomerIdAsync(string customerId)
         {

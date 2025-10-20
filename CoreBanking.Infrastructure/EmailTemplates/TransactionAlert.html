@@ -1,37 +1,63 @@
 ﻿<!DOCTYPE html>
-<html>
-<body style="font-family: Arial, sans-serif; color: #333;">
-    <h2>💳 {{TransactionType}} Alert</h2>
-    <p>Hello {{FirstName}},</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TransactionType}} Alert</title>
+</head>
+<body style="font-family:'Segoe UI', Arial, sans-serif; color:#333; background-color:#f7f9fc; margin:0; padding:0;">
 
-    <p>A {{TransactionType}} transaction has occurred on your account.</p>
+    <div style="max-width:600px; background:#ffffff; margin:30px auto; padding:25px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.08);">
 
-    <table style="border-collapse: collapse; width: 100%;">
-        <tr>
-            <td><strong>Amount:</strong></td>
-            <td>₦{{Amount}}</td>
-        </tr>
-        <tr>
-            <td><strong>Account Number:</strong></td>
-            <td>{{AccountNumber}}</td>
-        </tr>
-        <tr>
-            <td><strong>Reference:</strong></td>
-            <td>{{Reference}}</td>
-        </tr>
-        <tr>
-            <td><strong>Date:</strong></td>
-            <td>{{Date}}</td>
-        </tr>
-        <tr>
-            <td><strong>Available Balance:</strong></td>
-            <td>₦{{Balance}}</td>
-        </tr>
-    </table>
+        <h2 style="text-align:center; margin-bottom:25px;">
+            <span style="{{TransactionColor}} color:white; padding:10px 20px; border-radius:8px;">
+                {{TransactionType}} Alert
+            </span>
+        </h2>
 
-    <p>Thank you for banking with CoreBanking!</p>
-    <footer style="margin-top: 20px; font-size: 0.9em; color: #777;">
-        &copy; {{Year}} CoreBanking. All rights reserved.
-    </footer>
+        <p style="line-height:1.6; font-size:16px;">
+            Hello <span style="font-weight:bold; color:#0078d7;">{{FirstName}} {{LastName}}</span>,
+        </p>
+
+        <p style="line-height:1.6; font-size:16px;">
+            A <strong>{{TransactionType}}</strong> transaction has occurred on your account.
+        </p>
+
+        <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+            <tr style="background-color:#f4f7fb;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555;">Sender:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">{{SenderSection}}</td>
+            </tr>
+            <tr style="background-color:#ffffff;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555; width:45%;">Amount:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">₦{{Amount}}</td>
+            </tr>
+            <tr style="background-color:#f4f7fb;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555;">Account Number:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">{{AccountNumber}}</td>
+            </tr>
+            <tr style="background-color:#ffffff;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555;">Reference:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">{{Reference}}</td>
+            </tr>
+            <tr style="background-color:#f4f7fb;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555;">Date:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">{{Date}}</td>
+            </tr>
+            <tr style="background-color:#ffffff;">
+                <td style="padding:10px 8px; font-size:15px; font-weight:600; color:#555;">Available Balance:</td>
+                <td style="padding:10px 8px; font-size:15px; text-align:right; color:#000;">₦{{Balance}}</td>
+            </tr>
+        </table>
+
+        <p style="line-height:1.6; font-size:16px;">
+            Thank you for banking with <strong>CoreBanking</strong>!
+        </p>
+
+        <footer style="text-align:center; margin-top:25px; font-size:13px; color:#777; border-top:1px solid #eee; padding-top:15px;">
+            &copy; {{Year}} CoreBanking. All rights reserved.
+        </footer>
+    </div>
+
 </body>
 </html>

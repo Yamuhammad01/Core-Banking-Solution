@@ -13,6 +13,7 @@ using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.Win32;
 using Octokit;
+using System.Security.Principal;
 
 namespace CoreBanking.Application.Services
 {
@@ -41,10 +42,11 @@ namespace CoreBanking.Application.Services
         {
             var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
             if (!isPinValid)
-                return new() { Success = false, Message = "Invalid transaction PIN" };
+                return new() { Success = false, Message = "Invalid Transaction PIN" };
 
             var source = await _accountRepo.GetByUserIdAsync(userId);
             var destination = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
+            //var customer = await _accountRepo.GetUserIdAsync(userId);
 
             if (source == null || destination == null)
                 return new() { Success = false, Message = "Invalid account number" };
@@ -86,6 +88,36 @@ namespace CoreBanking.Application.Services
                 Description = request.Narration,
                 Reference = reference
             });
+            var sender = await _accountRepo.GetUserByAccountIdAsync(source.Id);
+            var receiver = await _accountRepo.GetUserByAccountIdAsync(destination.Id);
+
+            //  Send a Debit Email Alert to the sender  
+            await _transactionEmailService.SendTransactionEmailAsync(
+                email: sender.Email,
+                firstName: sender.FirstName,
+                lastName: sender.LastName,
+                transactionType: "Debit",
+                amount: request.Amount,
+                accountNumber: source.AccountNumber,
+                reference: reference,
+                balance: source.Balance,
+                date: DateTime.UtcNow,
+                senderFullName: null
+            );
+
+            //  Send a Credit Email Alert to the receiver with the senders full name
+            await _transactionEmailService.SendTransactionEmailAsync(
+                 email: receiver.Email,
+                 firstName: receiver.FirstName,
+                 lastName: receiver.LastName,
+                 transactionType: "Credit",
+                 amount: request.Amount,
+                 accountNumber: destination.AccountNumber,
+                 reference: reference,
+                 balance: destination.Balance,
+                 date: DateTime.UtcNow,
+                 senderFullName: $"{sender.FirstName} {sender.LastName}"
+             );
 
             return new()
             {
@@ -122,12 +154,29 @@ namespace CoreBanking.Application.Services
                     Type = TransactionType.Deposit,
                     Reference = reference,
                     Description = request.Narration ?? "Admin deposit",
-                   // PerformedByAdmin = adminId,
+ 
                     CreatedAt = DateTime.UtcNow
                 };
 
+
+                var receiver = await _accountRepo.GetUserByAccountIdAsync(account.Id);
+                //  Send a Credit Email Alert to the receiver
+                await _transactionEmailService.SendTransactionEmailAsync(
+                     email: receiver.Email,
+                     firstName: receiver.FirstName,
+                     lastName: receiver.LastName,
+                     transactionType: "Credit",
+                     amount: request.Amount,
+                     accountNumber: account.AccountNumber,
+                     reference: reference,
+                     balance: account.Balance,
+                     date: DateTime.UtcNow
+                );
+
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
+
+                
 
                 return new TransactionResponseDto
                 {
@@ -233,10 +282,11 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                //  Send Email Alert using helper method
+                //  Send Email Alert 
                 await _transactionEmailService.SendTransactionEmailAsync(
                     email: customer.Email,
                     firstName: customer.FirstName,
+                    lastName: customer.LastName,
                     transactionType: "Withdrawal",
                     amount: request.Amount,
                     accountNumber: account.AccountNumber,

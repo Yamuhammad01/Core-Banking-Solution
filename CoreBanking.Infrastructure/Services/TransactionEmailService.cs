@@ -29,18 +29,22 @@ namespace CoreBanking.Infrastructure.Services
         public async Task SendTransactionEmailAsync(
             string email,
             string firstName,
+            string lastName,
             string transactionType,
             decimal amount,
             string accountNumber,
             string reference,
             decimal balance,
-            DateTime date)
+            DateTime date,
+            string? senderFullName)
         {
             try
             {
                 var emailBody = await _emailTemplateService.GetTransactionTemplateAsync(
                     firstName,
+                    lastName, 
                     transactionType,
+                    senderFullName,
                     amount,
                     accountNumber,
                     reference,

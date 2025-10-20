@@ -5,6 +5,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Domain.Entities;
+using Octokit;
 
 namespace CoreBanking.Application.Interfaces.IRepository
 {
@@ -20,6 +21,8 @@ namespace CoreBanking.Application.Interfaces.IRepository
         Task<BankAccount?> GetByUserIdAsync(string userId);
 
         Task<Customer?> GetUserIdAsync(string userId);
+
+        Task<Customer> GetUserByAccountIdAsync(Guid accountId);
 
         Task<BankAccount?> GetByIdAsync(Guid id);
         Task UpdateAsync(BankAccount account);
