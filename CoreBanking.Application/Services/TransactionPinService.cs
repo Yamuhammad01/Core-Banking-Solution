@@ -49,11 +49,11 @@ namespace CoreBanking.Application.Services
             }
 
             //check if a pin already exist
-            if (!string.IsNullOrEmpty(user.TransactionPinHash))
+            if (!string.IsNullOrEmpty(user.TransactionPin))
                 return new ApiResponses(false, "Transaction PIN already exists");
 
             //Hash the new pin
-            user.TransactionPinHash = _pinHasher.HashPassword(user, request.Pin);
+            user.TransactionPin = _pinHasher.HashPassword(user, request.Pin);
             await _userManager.UpdateAsync(user);
 
             return new ApiResponses(true, "Transaction PIN set successfully");
@@ -62,10 +62,10 @@ namespace CoreBanking.Application.Services
         public async Task<bool> VerifyTransactionPinAsync(string userId, string pin)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || string.IsNullOrEmpty(user.TransactionPinHash))
+            if (user == null || string.IsNullOrEmpty(user.TransactionPin))
                 return false;
 
-            var result = _pinHasher.VerifyHashedPassword(user, user.TransactionPinHash, pin);
+            var result = _pinHasher.VerifyHashedPassword(user, user.TransactionPin, pin);
             return result == PasswordVerificationResult.Success;
         }
     }
