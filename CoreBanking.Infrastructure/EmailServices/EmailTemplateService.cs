@@ -16,12 +16,7 @@ namespace CoreBanking.Infrastructure.EmailServices
 
         public async Task<string> GetWelcomeTemplateAsync(string firstName, string lastName, string accountNumber, string currency)
         {
-            var path = Path.Combine(
-                 Directory.GetParent(_contentRootPath)!.FullName,
-                "CoreBanking.Infrastructure",
-                "EmailTemplates",
-                "WelcomeTemplate.html"
-            );
+            var path = Path.Combine(AppContext.BaseDirectory, "EmailTemplates", "WelcomeTemplate.html");
 
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Email template not found at {path}");
@@ -49,12 +44,7 @@ namespace CoreBanking.Infrastructure.EmailServices
                decimal balance,
                DateTime date)
         {
-            var path = Path.Combine(
-                Directory.GetParent(_contentRootPath)!.FullName,
-                "CoreBanking.Infrastructure",
-                "EmailTemplates",
-                "TransactionAlert.html"
-            );
+            var path = Path.Combine(AppContext.BaseDirectory, "EmailTemplates", "TransactionAlert.html");
 
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Email template not found at {path}");
