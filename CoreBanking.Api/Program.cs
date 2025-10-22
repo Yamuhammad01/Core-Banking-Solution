@@ -26,6 +26,7 @@ using CoreBanking.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.Infrastructure.Services;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,8 +77,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 
-
-
+builder.Services.Configure<AdminSettings>(
+    builder.Configuration.GetSection("Admin"));
 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
@@ -144,15 +145,15 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     var userManager = services.GetRequiredService<UserManager<Customer>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    await RoleIdentity.SeedAsync(userManager, roleManager);
+    var adminConfig = services.GetRequiredService<IOptions<AdminSettings>>();
+
+    await RoleIdentity.SeedAsync(userManager, roleManager, adminConfig);
 }
 
-
 var authGroup = app.MapGroup("/api/auth");
-
-
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
