@@ -10,7 +10,7 @@ namespace CoreBanking.Application.Interfaces.IServices
 {
     public interface IEmailSenderr
     {
-        void SendEmail(Message message);
+        
         Task SendEmailAsync(Message message);
     }
 }
