@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentEmail.Core" Version="3.0.2" />
+    <PackageReference Include="MediatR" Version="8.0.0" />
+    <PackageReference Include="MimeKit" Version="4.14.0" />
     <PackageReference Include="Octokit" Version="14.0.0" />
     <PackageReference Include="Refit" Version="8.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
@@ -16,10 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CoreBanking.Domain\CoreBanking.Domain.csproj" />
     <ProjectReference Include="..\CoreBanking.DTOs\CoreBanking.DTOs.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CommandHandlers\" />
   </ItemGroup>
 
 </Project>

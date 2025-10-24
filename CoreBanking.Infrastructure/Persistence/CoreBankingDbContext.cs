@@ -9,17 +9,22 @@ using System.Transactions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using CoreBanking.Domain.Entities;
 using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using CoreBanking.Application.Interfaces.IServices;
 
 namespace CoreBanking.Infrastructure.Persistence
 {
-    public class CoreBankingDbContext : IdentityDbContext<Customer>
+    public class CoreBankingDbContext : IdentityDbContext<Customer>, IBankingDbContext
     {
         public CoreBankingDbContext(DbContextOptions<CoreBankingDbContext> options) : base(options) { }
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
-        
+        public DbSet<EmailConfirmation> EmailConfirmations { get; set; } = default!;
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+            => base.SaveChangesAsync(cancellationToken);
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -44,6 +49,7 @@ namespace CoreBanking.Infrastructure.Persistence
          .HasForeignKey(al => al.UserId);
 
         }
+      
 
     }
 }

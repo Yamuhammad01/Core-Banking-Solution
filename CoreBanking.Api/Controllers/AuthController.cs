@@ -9,7 +9,7 @@ using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using CoreBanking.Infrastructure.EmailServices;
+using CoreBanking.Application.Common;
 
 
 namespace CoreBanking.Api.Controllers

@@ -57,7 +57,7 @@ namespace CoreBanking.Infrastructure.EmailServices
             // If sender is null or empty, remove the entire <tr> that contains {{SenderSection}}
             if (string.IsNullOrEmpty(senderFullName))
             {
-                // Remove the <tr> block containing the Sender row completely
+                // Remove the <tr> block containing t1he Sender row completely
                 template = Regex.Replace(
                     template,
                     @"<tr[^>]*>\s*<td[^>]*>Sender:<\/td>\s*<td[^>]*>{{SenderSection}}<\/td>\s*<\/tr>",

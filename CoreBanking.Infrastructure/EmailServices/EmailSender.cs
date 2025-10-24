@@ -15,6 +15,7 @@ using MimeKit;
 using CoreBanking.Infrastructure.EmailServices;
 using SendGrid.Helpers.Mail;
 using SendGrid;
+using CoreBanking.Application.Common;
 
 namespace CoreBanking.Application.Services
 {
@@ -50,8 +51,6 @@ namespace CoreBanking.Application.Services
                 throw new Exception($"SendGrid failed: {response.StatusCode} - {error}");
             }
         }
-
-      
         
     }
 
