@@ -74,6 +74,7 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddScoped<IBankingDbContext>(provider => provider.GetRequiredService<CoreBankingDbContext>());
 builder.Services.AddScoped<IEmailTemplateService>(provider => provider.GetRequiredService<EmailTemplateService>());
+builder.Services.AddScoped<ICodeHasher>(provider => provider.GetRequiredService<CodeHasher>());
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
@@ -82,6 +83,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
+
+
 //builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddHttpContextAccessor();
 

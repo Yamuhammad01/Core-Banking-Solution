@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using CoreBanking.Application.Command;
+using CoreBanking.Application.Command.PasswordResetCommand;
 
 
 namespace CoreBanking.Api.Controllers

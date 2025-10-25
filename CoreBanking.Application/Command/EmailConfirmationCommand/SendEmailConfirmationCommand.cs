@@ -1,16 +1,16 @@
 ﻿using CoreBanking.Application.Common;
 using MediatR;
+using Octokit.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.Command
+namespace CoreBanking.Application.Command.EmailConfirmationCommand
 {
-    public class VerifyEmailConfirmationCommand : IRequest<Result>
+    public class SendEmailConfirmationCommand : IRequest<Result>
     {
         public string Email { get; set; }
-        public string Code { get; set; }
     }
 }

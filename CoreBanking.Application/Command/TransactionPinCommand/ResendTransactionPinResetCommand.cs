@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.Command
+namespace CoreBanking.Application.Command.TransactionPinCommand
 {
-
-    public class SendPasswordResetCodeCommand : IRequest<Result>
+    public class ResendTransactionPinResetCommand : IRequest<Result>
     {
         public string Email { get; set; } = default!;
     }

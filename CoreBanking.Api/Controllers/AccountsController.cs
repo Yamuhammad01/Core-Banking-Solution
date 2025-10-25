@@ -91,6 +91,7 @@ namespace CoreBanking.Api.Controllers
             }).ToList();
                 return Ok(accountDtos);
         }
+        [Authorize]
         [HttpGet("check-balance")]
         public async Task<IActionResult> CheckBalance()
         {

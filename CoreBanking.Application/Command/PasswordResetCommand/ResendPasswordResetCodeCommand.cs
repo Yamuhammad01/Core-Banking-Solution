@@ -1,16 +1,15 @@
 ﻿using CoreBanking.Application.Common;
 using MediatR;
-using Octokit.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.Command.PasswordResetCommand
 {
-    public class SendEmailConfirmationCommand : IRequest<Result> 
+    public class ResendPasswordResetCodeCommand : IRequest<Result>
     {
-      public string Email { get; set; } 
+        public string Email { get; set; } = default!;
     }
 }

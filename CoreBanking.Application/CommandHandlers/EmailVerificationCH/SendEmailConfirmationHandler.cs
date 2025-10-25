@@ -16,6 +16,7 @@ using Octokit;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using CoreBanking.Application.Security;
+using CoreBanking.Application.Command.EmailConfirmationCommand;
 namespace CoreBanking.Application.CommandHandlers
 {
 

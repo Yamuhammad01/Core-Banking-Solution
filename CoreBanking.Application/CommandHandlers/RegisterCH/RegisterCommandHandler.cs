@@ -1,5 +1,4 @@
-﻿using CoreBanking.Application.Command;
-using CoreBanking.Application.Common;
+﻿using CoreBanking.Application.Common;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -12,6 +11,7 @@ using Microsoft.Win32;
 using Microsoft.EntityFrameworkCore;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Interfaces.IMailServices;
+using CoreBanking.Application.Command.RegisterCommand;
 
 namespace CoreBanking.Application.CommandHandlers
 {

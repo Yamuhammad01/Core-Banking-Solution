@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.Command
+namespace CoreBanking.Application.Command.RegisterCommand
 {
     public class RegisterCommand : IRequest<Result>
     {

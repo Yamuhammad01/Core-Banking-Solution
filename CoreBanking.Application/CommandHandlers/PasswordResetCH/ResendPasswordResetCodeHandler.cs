@@ -1,4 +1,4 @@
-﻿using CoreBanking.Application.Command;
+﻿using CoreBanking.Application.Command.PasswordResetCommand;
 using CoreBanking.Application.Common;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Security;
