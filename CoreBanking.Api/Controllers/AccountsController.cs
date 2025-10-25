@@ -91,5 +91,23 @@ namespace CoreBanking.Api.Controllers
             }).ToList();
                 return Ok(accountDtos);
         }
+        [HttpGet("check-balance")]
+        public async Task<IActionResult> CheckBalance()
+        {
+            var customerId = GetUserId();
+            var accounts = await _accountService.GetAccountsAsync(customerId);
+
+            var BalanceDtos = accounts.Select(t => new BalanceDto
+            {
+               
+                Balance = t.Balance,
+               
+            }).ToList();
+            return Ok(BalanceDtos);
+        }
+        public class BalanceDto
+        {
+           public decimal Balance { get; set; } 
+        }
     }
 }
