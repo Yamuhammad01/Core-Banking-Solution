@@ -44,7 +44,7 @@ namespace CoreBanking.Application.CommandHandlers
 
             // check for confirmation codes from the db
             if (record == null)
-                return Result.Failure("No confirmation code ");
+                return Result.Failure("Confirmation code not found");
                
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)

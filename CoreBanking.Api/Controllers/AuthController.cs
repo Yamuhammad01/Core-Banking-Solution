@@ -48,66 +48,8 @@ namespace CoreBanking.Api.Controllers
             _emailTemplateService = emailTemplateService;
             _mediator = mediator;
         }
+        
         [HttpPost("customer/register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto register)
-        {
-            if (register.Password != register.ConfirmPassword)
-                return BadRequest(new { message = "Passwords do not match." });
-
-            var userExists = await _userManager.FindByEmailAsync(register.Email);
-            if (userExists != null)
-                return BadRequest(new { message = "User with this email already exists." });
-
-            var user = new Customer
-            {
-                UserName = register.Email,
-                Email = register.Email,
-                FirstName = register.FirstName,
-                LastName = register.LastName,
-                PhoneNumber = register.PhoneNumber
-            };
-
-            var result = await _userManager.CreateAsync(user, register.Password);
-
-            if (!result.Succeeded)
-                return BadRequest(new { errors = result.Errors });
-
-
-
-            // Create default BankAccount after user registration
-            var bankAccount = new BankAccount
-            {
-                CustomerId = user.Id,
-                AccountNumber = await GenerateUniqueAccountNumberAsync(),
-                Balance = 0m, // default balance
-                AccountType = "Savings",
-                Currency = "NGN",
-                Status = "Active"
-            };
-
-            _context.BankAccounts.Add(bankAccount);
-            await _context.SaveChangesAsync();
-
-            var emailBody = await _emailTemplateService.GetWelcomeTemplateAsync(
-              user.FirstName, user.LastName, bankAccount.AccountNumber, bankAccount.Currency); // get the placeholder to use in the template
-
-            var message = new Message(
-                new string[] { register.Email },
-                "Welcome to CoreBanking",
-                emailBody
-            );
-
-
-            await _emailSender.SendEmailAsync(message);
-
-            return Ok(new
-            {
-                message = "User registered successfully, welcome email has been sent",
-                email = user.Email
-                
-            });
-        }
-        [HttpPost("customer/reg/free/registerrs")]
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             var result = await _mediator.Send(command);
@@ -141,12 +83,11 @@ namespace CoreBanking.Api.Controllers
                 expires_in = 3600
             });
         }
-        [Authorize]
-        [HttpPost("send-emailconfirmation-code")]
-        public async Task<IActionResult> SendEmailCode()
-        {
-            var result = await _mediator.Send(new SendEmailConfirmationCommand());
 
+        [HttpPost("send-confirmation-code")]
+        public async Task<IActionResult> SendConfirmationCode([FromBody] SendEmailConfirmationCommand command)
+        {
+            var result = await _mediator.Send(command);
             if (!result.Succeeded)
                 return BadRequest(new { message = result.Message });
 
@@ -156,11 +97,12 @@ namespace CoreBanking.Api.Controllers
         [HttpPost("verify-email-code")]
         public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailConfirmationCommand command)
         {
-            await _mediator.Send(command);
-            return Ok(new { message = "Email confirmed successfully" });
+            var result = await _mediator.Send(command);
+            if (!result.Succeeded)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = result.Message });
         }
-
-
 
         private async Task<string> GenerateUniqueAccountNumberAsync()
         {
