@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CoreBanking.Application.Common;
+using MediatR;
 using Octokit.Internal;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.CommandHandlers
 {
-    public class SendEmailConfirmationCommand : IRequest<Unit> 
+    public class SendEmailConfirmationCommand : IRequest<Result> 
     {
         public string Email { get; set; }
     }

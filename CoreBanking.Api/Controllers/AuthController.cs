@@ -10,6 +10,8 @@ using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CoreBanking.Application.Common;
+using CoreBanking.Application.CommandHandlers;
+using MediatR;
 
 
 namespace CoreBanking.Api.Controllers
@@ -24,7 +26,16 @@ namespace CoreBanking.Api.Controllers
         private readonly CoreBankingDbContext _context;
         private readonly IEmailSenderr _emailSender;
         private readonly EmailTemplateService _emailTemplateService;
-        public AuthController(UserManager<Customer> userManager, SignInManager<Customer> signInManager, JwtService jwtService, CoreBankingDbContext coreBankingDbContext, IEmailSenderr emailSender, EmailTemplateService emailTemplateService)
+        private readonly IMediator _mediator;
+        public AuthController(
+            UserManager<Customer> userManager, 
+            SignInManager<Customer> signInManager, 
+            JwtService jwtService, 
+            CoreBankingDbContext coreBankingDbContext,
+            IEmailSenderr emailSender,
+            EmailTemplateService emailTemplateService,
+            IMediator mediator
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -32,6 +43,7 @@ namespace CoreBanking.Api.Controllers
             _context = coreBankingDbContext;
             _emailSender = emailSender;
             _emailTemplateService = emailTemplateService;
+            _mediator = mediator;
         }
         [HttpPost("customer/register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
@@ -113,6 +125,19 @@ namespace CoreBanking.Api.Controllers
             });
         }
 
+        [HttpPost("send-emailconfirmation-code")]
+        public async Task<IActionResult> SendEmailCode([FromBody] SendEmailConfirmationCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(new { message = "Confirmation code sent" });
+        }
+
+        [HttpPost("verify-email-code")]
+        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailConfirmationCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(new { message = "Email confirmed successfully" });
+        }
 
 
 

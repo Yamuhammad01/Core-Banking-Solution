@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.CommandHandlers
 {
-    public class VerifyEmailConfirmationHandler : IRequestHandler<VerifyEmailConfirmationCommand>
+    public class VerifyEmailConfirmationHandler : IRequestHandler<VerifyEmailConfirmationCommand, Unit>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _dbContext;

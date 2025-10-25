@@ -27,6 +27,8 @@ using Microsoft.Extensions.Configuration;
 using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.Infrastructure.Services;
 using Microsoft.Extensions.Options;
+using MediatR;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +70,7 @@ builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 builder.Services.AddScoped(sp =>
     new EmailTemplateService(builder.Environment.ContentRootPath));
 
+builder.Services.AddScoped<IBankingDbContext>(provider => provider.GetRequiredService<CoreBankingDbContext>());
 
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -87,6 +90,8 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSetting
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 
 builder.Services.AddFluentEmailConfiguration(builder.Configuration);
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CoreBanking.Application.AssemblyMarker).Assembly));
 
 
 builder.Services.AddAuthentication(options =>

@@ -11,10 +11,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Application.Common;
+using CoreBanking.Application.Responses;
 namespace CoreBanking.Application.CommandHandlers
 {
 
-    public class SendEmailConfirmationHandler : IRequestHandler<SendEmailConfirmationCommand, Unit>
+    public class SendEmailConfirmationHandler : IRequestHandler<SendEmailConfirmationCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _db;
@@ -33,11 +34,12 @@ namespace CoreBanking.Application.CommandHandlers
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                throw new Exception("User not found.");
+                return Result.Failure("User not Found");
+                //throw new Exception("User not found.");
 
             // Remove old unused codes for the same purpose (optional)
             var old = _db.EmailConfirmations
@@ -86,7 +88,7 @@ namespace CoreBanking.Application.CommandHandlers
             await _emailService.SendEmailAsync(message);
 
             _logger.LogInformation("Email confirmation code generated for user {UserId}", user.Id);
-            return Unit.Value;
+            return Result.Success("Email Confirmation sent successfully");
         }
 
         private static string Generate6DigitCode()
@@ -104,5 +106,7 @@ namespace CoreBanking.Application.CommandHandlers
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(code));
             return Convert.ToBase64String(hash);
         }
+
+       
     }
 }

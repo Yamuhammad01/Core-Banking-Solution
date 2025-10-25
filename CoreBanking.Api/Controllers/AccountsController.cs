@@ -20,14 +20,13 @@ namespace CoreBanking.Api.Controllers
         private readonly AccountService _accountService;
         private readonly TransactionPinService _pinService;
         private readonly IEmailSenderr _emailSender;
-        private readonly IMediator _mediator;
+       
 
-        public AccountsController(AccountService accountService, TransactionPinService transactionPinService, IEmailSenderr emailService, IMediator mediator)
+        public AccountsController(AccountService accountService, TransactionPinService transactionPinService, IEmailSenderr emailService)
         {
             _accountService = accountService;
             _pinService = transactionPinService;
             _emailSender = emailService;
-            _mediator = mediator;
         }
 
         private string GetUserId() =>
@@ -72,21 +71,6 @@ namespace CoreBanking.Api.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _pinService.SetTransactionPinAsync(userId, request);
             return result.Success ? Ok(result) : BadRequest(result);
-        }
-
-
-        [HttpPost("send-email-code")]
-        public async Task<IActionResult> SendEmailCode([FromBody] SendEmailConfirmationCommand command)
-        {
-            await _mediator.Send(command);
-            return Ok(new { message = "Confirmation code sent" });
-        }
-
-        [HttpPost("verify-email-code")]
-        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailConfirmationCommand command)
-        {
-            await _mediator.Send(command);
-            return Ok(new { message = "Email confirmed successfully" });
         }
 
         [Authorize]
