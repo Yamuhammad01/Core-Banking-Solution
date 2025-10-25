@@ -14,19 +14,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
 {
-    public class VerifyEmailConfirmationHandler : IRequestHandler<VerifyEmailConfirmationCommand, Result>
+    public class VerifyEmailCodeHandler : IRequestHandler<VerifyEmailCodeCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _dbContext;
-        private readonly ILogger<VerifyEmailConfirmationHandler> _logger;
+        private readonly ILogger<VerifyEmailCodeHandler> _logger;
         private readonly ICodeHasher _codeHasher;
 
-        public VerifyEmailConfirmationHandler(
+        public VerifyEmailCodeHandler(
             UserManager<Customer> userManager,
             IBankingDbContext db,
-            ILogger<VerifyEmailConfirmationHandler> logger,
+            ILogger<VerifyEmailCodeHandler> logger,
             ICodeHasher codeHasher)
         {
             _userManager = userManager;
@@ -35,7 +35,7 @@ namespace CoreBanking.Application.CommandHandlers
             _codeHasher = codeHasher;
         }
 
-        public async Task<Result> Handle(VerifyEmailConfirmationCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(VerifyEmailCodeCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -50,7 +50,7 @@ namespace CoreBanking.Application.CommandHandlers
             // check for confirmation codes from the db
             if (record == null)
                 return Result.Failure("Confirmation code not found");
-               
+
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)
                 return Result.Failure("Confirmation code expired. Please Request a new one");

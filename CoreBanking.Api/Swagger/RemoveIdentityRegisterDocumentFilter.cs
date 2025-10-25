@@ -13,8 +13,10 @@ namespace CoreBanking.Api.Swagger
         {
                  "api/auth/register",
                   "api/auth/login",
-                // "api/auth/forgotpassword",
-                 //"api/auth/resetpassword"
+                  "api/auth/forgotpassword",
+                  "api/auth/resetpassword",
+                  "api/auth/confirmEmail",
+                  "api/auth/resendconfirmationEmail"
         };
 
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)

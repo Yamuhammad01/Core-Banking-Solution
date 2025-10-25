@@ -10,12 +10,14 @@ using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CoreBanking.Application.Common;
-using CoreBanking.Application.CommandHandlers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using CoreBanking.Application.Command;
 using CoreBanking.Application.Command.PasswordResetCommand;
+using CoreBanking.Application.Command.EmailConfirmationCommand;
+using CoreBanking.Application.Command.RegisterCommand;
+using CoreBanking.Application.Command.TransactionPinCommand;
+using CoreBanking.Application.Command.ChangePasswordCommand;
 
 
 namespace CoreBanking.Api.Controllers
@@ -85,8 +87,8 @@ namespace CoreBanking.Api.Controllers
             });
         }
 
-        [HttpPost("send-confirmation-code")]
-        public async Task<IActionResult> SendConfirmationCode([FromBody] SendEmailConfirmationCommand command)
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> SendConfirmationCode([FromBody] SendEmailCodeCommand command)
         {
             var result = await _mediator.Send(command);
             if (!result.Succeeded)
@@ -95,8 +97,8 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = result.Message });
         }
 
-        [HttpPost("verify-email-code")]
-        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailConfirmationCommand command)
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeCommand command)
         {
             var result = await _mediator.Send(command);
             if (!result.Succeeded)
@@ -105,15 +107,21 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = result.Message });
         }
 
+        [HttpPost("resend-confirmation-email")]
+        public async Task<IActionResult> ResendPasswordResetCode([FromBody] ResendEmailCodeCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
 
-        [HttpPost("send-password-reset-code")]
+        [HttpPost("reset-password")]
         public async Task<IActionResult> SendPasswordResetCode([FromBody] SendPasswordResetCodeCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);
         }
 
-        [HttpPost("verify-password-reset-code")]
+        [HttpPost("verify-password")]
         public async Task<IActionResult> VerifyPasswordResetCode([FromBody] VerifyPasswordResetCodeCommand command)
         {
             var result = await _mediator.Send(command);
@@ -125,6 +133,34 @@ namespace CoreBanking.Api.Controllers
         {
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+
+        [HttpPost("reset-transaction-pin")]
+        public async Task<IActionResult> SendPinReset([FromBody] SendPinResetCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
+        }
+
+        [HttpPost("verify-transaction-pin")]
+        public async Task<IActionResult> VerifyPinReset([FromBody] VerifyPinResetCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
+        }
+
+        [HttpPost("resend-transaction-pin-code")]
+        public async Task<IActionResult> ResendPinReset([FromBody] ResendPinResetCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+             var result = await _mediator.Send(command);
+            return Ok(new { message = result });
         }
     }
     public record LoginRequestDto(string Email, string Password);

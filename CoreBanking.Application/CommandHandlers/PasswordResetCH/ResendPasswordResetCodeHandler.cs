@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
 {
     public class ResendPasswordResetCodeHandler : IRequestHandler<ResendPasswordResetCodeCommand, Result>
     {
@@ -23,8 +23,8 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly IEmailSenderr _emailSender;
         private readonly ICodeHasher _codeHasher;
 
-        public ResendPasswordResetCodeHandler(IBankingDbContext dbContext, 
-            UserManager<Customer> userManager, 
+        public ResendPasswordResetCodeHandler(IBankingDbContext dbContext,
+            UserManager<Customer> userManager,
             IEmailSenderr emailSender,
             ICodeHasher codeHasher)
         {
@@ -40,7 +40,7 @@ namespace CoreBanking.Application.CommandHandlers
             if (user == null)
                 return Result.Failure("User not found");
 
-           
+
 
             // invalidate old codes
             var oldCodes = await _dbContext.EmailConfirmations
@@ -77,7 +77,7 @@ namespace CoreBanking.Application.CommandHandlers
                 $"Your new password reset code is: {code}. It expires in 10 minutes."
             ));
 
-            return Result.Success("A new password reset code has been sent to your email"); 
+            return Result.Success("A new password reset code has been sent to your email");
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Command.EmailConfirmationCommand
 {
-    public class VerifyEmailConfirmationCommand : IRequest<Result>
+    public class VerifyEmailCodeCommand : IRequest<Result>
     {
         public string Email { get; set; }
         public string Code { get; set; }

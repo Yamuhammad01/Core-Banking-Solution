@@ -12,8 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Interfaces.IMailServices;
 using CoreBanking.Application.Command.RegisterCommand;
+using CoreBanking.Application.Command.EmailConfirmationCommand;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.RegisterCH
 {
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
     {
@@ -24,7 +25,7 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly IEmailSenderr _emailSender;
 
         public RegisterCommandHandler(UserManager<Customer> userManager,
-            IMediator mediator, 
+            IMediator mediator,
             IBankingDbContext bankingDbContext,
             IEmailTemplateService emailTemplateService,
             IEmailSenderr emailSender)
@@ -38,6 +39,7 @@ namespace CoreBanking.Application.CommandHandlers
 
         public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
+            //check if password doesnt match
             if (request.Password != request.ConfirmPassword)
                 return Result.Failure("Passwords do not match.");
 
@@ -83,7 +85,7 @@ namespace CoreBanking.Application.CommandHandlers
 
             await _emailSender.SendEmailAsync(message);
 
-            await _mediator.Send(new SendEmailConfirmationCommand { Email = user.Email }, cancellationToken);
+            await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
 
             return Result.Success("Registration successful! Please check your email for the confirmation code.");
         }

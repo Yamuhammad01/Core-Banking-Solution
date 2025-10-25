@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
 {
     public class VerifyPasswordResetCodeHandler : IRequestHandler<VerifyPasswordResetCodeCommand, Result>
     {
@@ -20,7 +20,7 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly UserManager<Customer> _userManager;
         private readonly ICodeHasher _codeHasher;
 
-        public VerifyPasswordResetCodeHandler(IBankingDbContext dbContext, 
+        public VerifyPasswordResetCodeHandler(IBankingDbContext dbContext,
             UserManager<Customer> userManager,
             ICodeHasher codeHasher)
         {
@@ -34,7 +34,7 @@ namespace CoreBanking.Application.CommandHandlers
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
                 return Result.Failure("User not Found");
-          
+
             var record = await _dbContext.EmailConfirmations
                 .Where(x => x.Email == request.Email && x.Purpose == "PasswordReset" && !x.IsUsed)
                 .OrderByDescending(x => x.CreatedAt)
@@ -42,7 +42,7 @@ namespace CoreBanking.Application.CommandHandlers
 
             if (record == null)
                 return Result.Failure("No reset code found. Request a new one");
-               
+
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)
                 return Result.Failure("Confirmation code expired. Please Request a new one");

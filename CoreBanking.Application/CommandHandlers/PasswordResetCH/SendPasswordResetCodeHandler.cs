@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
 {
     public class SendPasswordResetCodeHandler : IRequestHandler<SendPasswordResetCodeCommand, Result>
     {
@@ -23,8 +23,8 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly ICodeHasher _codeHasher;
         private readonly ILogger<SendPasswordResetCodeHandler> _logger;
 
-        public SendPasswordResetCodeHandler(UserManager<Customer> userManager, 
-            IBankingDbContext dbContext, 
+        public SendPasswordResetCodeHandler(UserManager<Customer> userManager,
+            IBankingDbContext dbContext,
             IEmailSenderr emailSender,
             ICodeHasher codeHasher,
             ILogger<SendPasswordResetCodeHandler> logger)

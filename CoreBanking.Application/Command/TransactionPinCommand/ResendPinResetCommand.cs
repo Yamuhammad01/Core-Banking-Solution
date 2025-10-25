@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Command.TransactionPinCommand
 {
-    public class ResendTransactionPinResetCommand : IRequest<Result>
+    public class ResendPinResetCommand : IRequest<Result>
     {
         public string Email { get; set; } = default!;
     }

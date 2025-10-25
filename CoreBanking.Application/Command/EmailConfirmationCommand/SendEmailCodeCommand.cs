@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Command.EmailConfirmationCommand
 {
-    public class SendEmailConfirmationCommand : IRequest<Result>
+    public class SendEmailCodeCommand : IRequest<Result>
     {
         public string Email { get; set; }
     }

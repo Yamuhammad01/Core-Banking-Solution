@@ -13,16 +13,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.TransactionPinCH
 {
-    public class SendTransactionPinResetHandler : IRequestHandler<SendTransactionPinResetCommand, Result>
+    public class SendPinResetHandler : IRequestHandler<SendPinResetCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _dbContext;
         private readonly IEmailSenderr _emailSender;
         private readonly ICodeHasher _codeHasher;
 
-        public SendTransactionPinResetHandler(
+        public SendPinResetHandler(
             UserManager<Customer> userManager,
             IBankingDbContext dbContext,
             IEmailSenderr emailSender,
@@ -34,7 +34,7 @@ namespace CoreBanking.Application.CommandHandlers
             _codeHasher = codeHasher;
         }
 
-        public async Task<Result> Handle(SendTransactionPinResetCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(SendPinResetCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -79,7 +79,7 @@ namespace CoreBanking.Application.CommandHandlers
 
             await _emailSender.SendEmailAsync(message);
             return Result.Success("A 6-digit reset code has been sent to your email");
-            
+
         }
     }
 }

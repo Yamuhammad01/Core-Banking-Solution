@@ -17,23 +17,23 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using CoreBanking.Application.Security;
 using CoreBanking.Application.Command.EmailConfirmationCommand;
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
 {
 
-    public class SendEmailConfirmationHandler : IRequestHandler<SendEmailConfirmationCommand, Result>
+    public class SendEmailCodeHandler : IRequestHandler<SendEmailCodeCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _db;
         private readonly IEmailSenderr _emailService;
-        private readonly ILogger<SendEmailConfirmationHandler> _logger;
+        private readonly ILogger<SendEmailCodeHandler> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICodeHasher _codeHasher;
 
-        public SendEmailConfirmationHandler(
+        public SendEmailCodeHandler(
             UserManager<Customer> userManager,
             IBankingDbContext db,
             IEmailSenderr emailService,
-            ILogger<SendEmailConfirmationHandler> logger,
+            ILogger<SendEmailCodeHandler> logger,
             IHttpContextAccessor httpContextAccessor,
             ICodeHasher codeHasher)
         {
@@ -45,7 +45,7 @@ namespace CoreBanking.Application.CommandHandlers
             _codeHasher = codeHasher;
         }
 
-        public async Task<Result> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(SendEmailCodeCommand request, CancellationToken cancellationToken)
         {
             //find a user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -61,7 +61,7 @@ namespace CoreBanking.Application.CommandHandlers
             _db.EmailConfirmations.RemoveRange(old);
 
             // Generate secure 6-digit code
-            var code = _codeHasher.Generate6DigitCode();     
+            var code = _codeHasher.Generate6DigitCode();
 
             // Generate salt and hash
             var saltBytes = RandomNumberGenerator.GetBytes(16);
@@ -93,11 +93,11 @@ namespace CoreBanking.Application.CommandHandlers
             <p>Your email confirmation code is <strong>{code}</strong>.</p>
             <p>This code expires in 10 minutes. If you did not request this, ignore this email.</p>";
 
-              var message = new Message(
-                 new string[] { user.Email! },          // recipients
-                   "Confirmation Email",                  // subject
-                 html                                   // body/content
-              );
+            var message = new Message(
+               new string[] { user.Email! },          // recipients
+                 "Confirmation Email",                  // subject
+               html                                   // body/content
+            );
 
             await _emailService.SendEmailAsync(message);
 

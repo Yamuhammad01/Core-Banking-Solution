@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.Command.TransactionPinCommand
+namespace CoreBanking.Application.Command.EmailConfirmationCommand
 {
-    public class SendPinResetCommand : IRequest<Result>
+    public class ResendEmailCodeCommand : IRequest<Result>
     {
-        public string Email { get; set; } = default!;
+        public string Email { get; set; }
     }
 }
