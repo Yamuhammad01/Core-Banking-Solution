@@ -12,6 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CoreBanking.Application.Common;
 using CoreBanking.Application.Responses;
+using Octokit;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 namespace CoreBanking.Application.CommandHandlers
 {
 
@@ -21,25 +24,31 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly IBankingDbContext _db;
         private readonly IEmailSenderr _emailService;
         private readonly ILogger<SendEmailConfirmationHandler> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SendEmailConfirmationHandler(
             UserManager<Customer> userManager,
             IBankingDbContext db,
             IEmailSenderr emailService,
-            ILogger<SendEmailConfirmationHandler> logger)
+            ILogger<SendEmailConfirmationHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _db = db;
             _emailService = emailService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
         {
+            //find a user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return Result.Failure("User not Found");
-                //throw new Exception("User not found.");
+                return Result.Failure("User not found.");
+
+            if (user.EmailConfirmed)
+                return Result.Failure("Email already confirmed");
 
             // Remove old unused codes for the same purpose (optional)
             var old = _db.EmailConfirmations
@@ -66,7 +75,7 @@ namespace CoreBanking.Application.CommandHandlers
                 IsUsed = false
             };
             var existing = await _db.EmailConfirmations
-             .Where(e => e.Email == request.Email && !e.IsUsed)
+             .Where(e => e.Email == user.Email && !e.IsUsed)
             .ToListAsync();
             _db.EmailConfirmations.RemoveRange(existing);
 

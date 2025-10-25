@@ -11,6 +11,6 @@ namespace CoreBanking.Application.CommandHandlers
 {
     public class SendEmailConfirmationCommand : IRequest<Result> 
     {
-        public string Email { get; set; }
+      public string Email { get; set; } 
     }
 }

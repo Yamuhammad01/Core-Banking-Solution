@@ -28,6 +28,7 @@ using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using MediatR;
+using CoreBanking.Application.Interfaces.IMailServices;
 
 
 
@@ -71,7 +72,7 @@ builder.Services.AddScoped(sp =>
     new EmailTemplateService(builder.Environment.ContentRootPath));
 
 builder.Services.AddScoped<IBankingDbContext>(provider => provider.GetRequiredService<CoreBankingDbContext>());
-
+builder.Services.AddScoped<IEmailTemplateService>(provider => provider.GetRequiredService<EmailTemplateService>());
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
@@ -79,6 +80,9 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
+//builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.Configure<AdminSettings>(
     builder.Configuration.GetSection("Admin"));

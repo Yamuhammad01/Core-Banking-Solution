@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using CoreBanking.Application.Common;
 using CoreBanking.Application.CommandHandlers;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using CoreBanking.Application.Command;
 
 
 namespace CoreBanking.Api.Controllers
@@ -104,13 +107,27 @@ namespace CoreBanking.Api.Controllers
                 
             });
         }
+        [HttpPost("customer/reg/free/registerrs")]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+        {
+            var result = await _mediator.Send(command);
 
+            if (!result.Succeeded)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = result.Message });
+        }
 
         [HttpPost("customer/login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return Unauthorized("Invalid credentials");
+
+            if (!user.EmailConfirmed)
+            {
+                return BadRequest("Comfirm your email before login please");
+            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!result.Succeeded) return Unauthorized("Invalid credentials");
@@ -124,12 +141,16 @@ namespace CoreBanking.Api.Controllers
                 expires_in = 3600
             });
         }
-
+        [Authorize]
         [HttpPost("send-emailconfirmation-code")]
-        public async Task<IActionResult> SendEmailCode([FromBody] SendEmailConfirmationCommand command)
+        public async Task<IActionResult> SendEmailCode()
         {
-            await _mediator.Send(command);
-            return Ok(new { message = "Confirmation code sent" });
+            var result = await _mediator.Send(new SendEmailConfirmationCommand());
+
+            if (!result.Succeeded)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = result.Message });
         }
 
         [HttpPost("verify-email-code")]

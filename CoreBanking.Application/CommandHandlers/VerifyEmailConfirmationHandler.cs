@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces.IServices;
+﻿using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.CommandHandlers
 {
-    public class VerifyEmailConfirmationHandler : IRequestHandler<VerifyEmailConfirmationCommand, Unit>
+    public class VerifyEmailConfirmationHandler : IRequestHandler<VerifyEmailConfirmationCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IBankingDbContext _dbContext;
@@ -29,7 +30,7 @@ namespace CoreBanking.Application.CommandHandlers
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(VerifyEmailConfirmationCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(VerifyEmailConfirmationCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
@@ -41,17 +42,18 @@ namespace CoreBanking.Application.CommandHandlers
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
+            // check for confirmation codes from the db
             if (record == null)
-                throw new Exception("No confirmation code found. Request a new one.");
-
+                return Result.Failure("No confirmation code ");
+               
+            // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)
-                throw new Exception("Confirmation code expired. Request a new one.");
+                return Result.Failure("Confirmation code expired. Please Request a new one");
 
             // Hash input using stored salt and compare
             var computedHash = HashCode(request.Code, record.Salt);
             if (!CryptographicEquals(computedHash, record.CodeHash))
-                throw new Exception("Invalid confirmation code.");
-
+                return Result.Failure("Invalid confirmation code.");
             // Mark as used
             record.IsUsed = true;
 
@@ -59,12 +61,12 @@ namespace CoreBanking.Application.CommandHandlers
             user.EmailConfirmed = true;
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                throw new Exception("Failed to update user email status.");
+                return Result.Failure("Failed to update user email status.");
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("User {UserId} confirmed email.", user.Id);
-            return Unit.Value;
+            return Result.Success("Email Verified Successfully");
         }
 
         private static string HashCode(string code, string salt)
