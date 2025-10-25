@@ -104,29 +104,27 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = result.Message });
         }
 
-        private async Task<string> GenerateUniqueAccountNumberAsync()
+
+        [HttpPost("send-password-reset-code")]
+        public async Task<IActionResult> SendPasswordResetCode([FromBody] SendPasswordResetCodeCommand command)
         {
-            const string bankCode = "811";
-            string accountNumber;
-            bool exists;
-
-            do
-            {
-                // Generate 7 random digits
-                var random = new Random();
-                var randomDigits = random.Next(0, 9999999).ToString("D7"); // pad with zeros
-                accountNumber = bankCode + randomDigits;
-
-                // Ensure it's unique b4 creating new account
-                exists = await _context.BankAccounts
-                    .AnyAsync(b => b.AccountNumber == accountNumber);
-
-            } while (exists);
-
-            return accountNumber;
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
+        [HttpPost("verify-password-reset-code")]
+        public async Task<IActionResult> VerifyPasswordResetCode([FromBody] VerifyPasswordResetCodeCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
 
+        [HttpPost("resend-password-reset-code")]
+        public async Task<IActionResult> ResendPasswordResetCode([FromBody] ResendPasswordResetCodeCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
     }
     public record LoginRequestDto(string Email, string Password);
 }

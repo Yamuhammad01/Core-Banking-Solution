@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.Command
 {
     public class VerifyEmailConfirmationCommand : IRequest<Result>
     {

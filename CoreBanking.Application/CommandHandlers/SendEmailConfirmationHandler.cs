@@ -15,6 +15,7 @@ using CoreBanking.Application.Responses;
 using Octokit;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using CoreBanking.Application.Security;
 namespace CoreBanking.Application.CommandHandlers
 {
 
@@ -25,19 +26,22 @@ namespace CoreBanking.Application.CommandHandlers
         private readonly IEmailSenderr _emailService;
         private readonly ILogger<SendEmailConfirmationHandler> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICodeHasher _codeHasher;
 
         public SendEmailConfirmationHandler(
             UserManager<Customer> userManager,
             IBankingDbContext db,
             IEmailSenderr emailService,
             ILogger<SendEmailConfirmationHandler> logger,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ICodeHasher codeHasher)
         {
             _userManager = userManager;
             _db = db;
             _emailService = emailService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+            _codeHasher = codeHasher;
         }
 
         public async Task<Result> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
@@ -56,12 +60,12 @@ namespace CoreBanking.Application.CommandHandlers
             _db.EmailConfirmations.RemoveRange(old);
 
             // Generate secure 6-digit code
-            var code = Generate6DigitCode();
+            var code = _codeHasher.Generate6DigitCode();     
 
             // Generate salt and hash
             var saltBytes = RandomNumberGenerator.GetBytes(16);
             var salt = Convert.ToBase64String(saltBytes);
-            var codeHash = HashCode(code, salt);
+            var codeHash = _codeHasher.HashCode(code, salt);
 
             var record = new EmailConfirmation
             {
@@ -99,23 +103,5 @@ namespace CoreBanking.Application.CommandHandlers
             _logger.LogInformation("Email confirmation code generated for user {UserId}", user.Id);
             return Result.Success("Email Confirmation sent successfully");
         }
-
-        private static string Generate6DigitCode()
-        {
-            //Generate a secure random number between 0 and 999999
-            var val = RandomNumberGenerator.GetInt32(0, 1_000_000);
-            return val.ToString("D6"); // zero-padded to 6 digits
-        }
-
-        private static string HashCode(string code, string salt)
-        {
-            // Used HMACSHA256 with salt for hashing
-            var saltBytes = Convert.FromBase64String(salt);
-            using var hmac = new HMACSHA256(saltBytes);
-            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(code));
-            return Convert.ToBase64String(hash);
-        }
-
-       
     }
 }
