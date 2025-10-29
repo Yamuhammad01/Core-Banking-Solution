@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.Command.ChangePasswordCommand
+namespace CoreBanking.Application.CommandHandlers.TransactionPinCH
 {
-    internal class ChangePasswordCommand
+    internal class ChangePinHandler
     {
     }
 }

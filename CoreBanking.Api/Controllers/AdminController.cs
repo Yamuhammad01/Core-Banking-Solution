@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Application.Services;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.DTOs.TransactionDto;
@@ -52,6 +53,14 @@ namespace CoreBanking.Api.Controllers
 
             var result = await _transactionService.AdminDepositAsync(userId, dto);
             return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto request)
+        {
+
+            var success = await _accountService.UpdateCustomerProfileAsync(request);
+            return Ok(new { message = success });
         }
 
 

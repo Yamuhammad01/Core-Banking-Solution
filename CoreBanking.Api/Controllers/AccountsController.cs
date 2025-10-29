@@ -1,16 +1,17 @@
-﻿using CoreBanking.Application.Services;
+﻿using CoreBanking.Application.CommandHandlers;
+using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces.IServices;
+using CoreBanking.Application.Services;
+using CoreBanking.DTOs;
+using CoreBanking.DTOs.AccountDto;
+using CoreBanking.DTOs.TransactionDto;
+using CoreBanking.Infrastructure.EmailServices;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Octokit;
 using System.Security.Claims;
-using CoreBanking.DTOs;
-using Microsoft.AspNetCore.Authorization;
-using CoreBanking.DTOs.TransactionDto;
-using CoreBanking.DTOs.AccountDto;
-using CoreBanking.Application.Interfaces.IServices;
-using CoreBanking.Infrastructure.EmailServices;
-using CoreBanking.Application.CommandHandlers;
-using MediatR;
-using CoreBanking.Application.Common;
 namespace CoreBanking.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -91,6 +92,29 @@ namespace CoreBanking.Api.Controllers
             }).ToList();
                 return Ok(accountDtos);
         }
+        // customer 
+        [Authorize]
+        [HttpGet("cutomer-profile")]
+        public async Task <IActionResult> Profile()
+        {
+            var customerId = GetUserId();
+            var customer = await _accountService.GetCustomerInfoAsync(customerId);
+
+            if (customer == null)
+                return NotFound("Customer not found");
+
+            var customerInfo = new ProfileDto
+            {
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber,
+                AccountNumber = customer.BankAccount.AccountNumber
+
+            };
+            return Ok(customerInfo);
+        }
+
         [Authorize]
         [HttpGet("check-balance")]
         public async Task<IActionResult> CheckBalance()

@@ -54,10 +54,7 @@ namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)
                 return Result.Failure("Confirmation code expired. Please Request a new one");
-
-            if (record.CodeHash != request.Code)
-                throw new Exception("Invalid code");
-
+       
             // Hash input using stored salt and compare
             var computedHash = _codeHasher.HashCode(request.Code, record.Salt);
             if (!_codeHasher.CryptographicEquals(computedHash, record.CodeHash))

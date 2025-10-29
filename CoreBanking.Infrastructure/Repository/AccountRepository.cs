@@ -1,14 +1,15 @@
-﻿using System;
+﻿using CoreBanking.Application;
+using CoreBanking.Application.Interfaces.IRepository;
+using CoreBanking.Domain.Entities;
+using CoreBanking.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Octokit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
-using CoreBanking.Application;
-using CoreBanking.Application.Interfaces.IRepository;
-using CoreBanking.Domain.Entities;
-using CoreBanking.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoreBanking.Infrastructure.Repository
 {
@@ -58,6 +59,19 @@ namespace CoreBanking.Infrastructure.Repository
                 .FirstOrDefaultAsync(a => a.Id == userId);
         }
 
+        //return customer information from 2 tables
+        public async Task<Customer?> GetCustomerInfoAsync(string userId)
+        {
+            return await _dbContext.Customers
+                .Include(c => c.BankAccount)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+        }
+        public async Task<Customer?> GetCustomerByEmailAsync(string email)
+        {
+            return await _dbContext.Customers
+              .FirstOrDefaultAsync(c => c.Email == email);
+        }
+
         public async Task<BankAccount?> GetByIdAsync(Guid id)
         {
             return await _dbContext.BankAccounts.FindAsync(id);
@@ -74,8 +88,19 @@ namespace CoreBanking.Infrastructure.Repository
 
         public async Task<BankAccount?> GetByAccountNumberAndUserIdAsync(string UserId, string accountNumber) =>
                       await _dbContext.BankAccounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber && a.CustomerId == UserId);
+        public async Task UpdateCustomerInfoAsync(Customer customer)
+        {
+            _dbContext.Customers.Update(customer);
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task DeleteCustomer(Customer customer)
+        {
+            _dbContext.Customers.Remove(customer);
+            await _dbContext.SaveChangesAsync();
+        }
 
     }
+
 
     public record CreatePin
     {

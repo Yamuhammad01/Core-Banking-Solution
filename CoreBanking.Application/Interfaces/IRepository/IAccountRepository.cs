@@ -26,5 +26,9 @@ namespace CoreBanking.Application.Interfaces.IRepository
 
         Task<BankAccount?> GetByIdAsync(Guid id);
         Task UpdateAsync(BankAccount account);
+        Task<Customer?> GetCustomerInfoAsync(string userId);
+        Task<Customer?> GetCustomerByEmailAsync(string email);
+        Task DeleteCustomer (Customer customer);
+        Task UpdateCustomerInfoAsync(Customer customer);
     }
 }

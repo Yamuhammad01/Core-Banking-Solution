@@ -17,7 +17,6 @@ using CoreBanking.Application.Command.PasswordResetCommand;
 using CoreBanking.Application.Command.EmailConfirmationCommand;
 using CoreBanking.Application.Command.RegisterCommand;
 using CoreBanking.Application.Command.TransactionPinCommand;
-using CoreBanking.Application.Command.ChangePasswordCommand;
 
 
 namespace CoreBanking.Api.Controllers

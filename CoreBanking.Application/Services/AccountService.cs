@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces.IRepository;
+﻿using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.AccountDto;
 using System;
@@ -47,6 +48,27 @@ namespace CoreBanking.Application.Services
 
             account.Status = status;
             await _accountRepository.UpdateAsync(account);
+        }
+        public async Task<Customer?> GetCustomerInfoAsync(string userId)
+        {
+            return await _accountRepository.GetCustomerInfoAsync(userId);
+        }
+        // update customer information
+        public async Task<Result> UpdateCustomerProfileAsync(UpdateProfileDto request)
+        {
+            var customer = await _accountRepository.GetCustomerByEmailAsync(request.Email);
+
+            if (customer == null)
+                return Result.Failure("Customer not found");
+
+            // Update customer info
+            customer.FirstName = request.FirstName ?? customer.FirstName;
+            customer.LastName = request.LastName ?? customer.LastName;
+            customer.Email = request.Email ?? customer.Email;
+            customer.PhoneNumber = request.PhoneNumber ?? customer.PhoneNumber;
+
+            await _accountRepository.UpdateCustomerInfoAsync(customer);
+            return Result.Success("Customer updated successfully");
         }
 
         private static string GenerateAccountNumber()

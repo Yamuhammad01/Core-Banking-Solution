@@ -1,4 +1,4 @@
-﻿using CoreBanking.Application.Command.ChangePasswordCommand;
+﻿using CoreBanking.Application.Command.PasswordResetCommand;
 using CoreBanking.Application.Common;
 using CoreBanking.Domain.Entities;
 using MediatR;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Application.CommandHandlers
+namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
 {
     public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Result>
     {
