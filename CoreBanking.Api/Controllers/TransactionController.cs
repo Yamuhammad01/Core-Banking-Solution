@@ -37,7 +37,7 @@ namespace CoreBanking.Api.Controllers
         /// Transfer funds between accounts.
         [Authorize]
         [HttpPost("transfer/funds")]
-        [ProducesResponseType(typeof(TransferResponseDto), 200)]
+        [ProducesResponseType(typeof(ApiResponses), 200)]
         public async Task<IActionResult> Transfer([FromBody] TransferRequestDto request)
         {
 

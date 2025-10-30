@@ -28,7 +28,7 @@ namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return Result.Failure("Passwords do not match");
+                return Result.Failure("User not found");
 
             var checkOldPassword = await _userManager.CheckPasswordAsync(user, request.OldPassword);
             if (!checkOldPassword)

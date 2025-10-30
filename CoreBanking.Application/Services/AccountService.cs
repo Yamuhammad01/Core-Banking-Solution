@@ -71,6 +71,17 @@ namespace CoreBanking.Application.Services
             return Result.Success("Customer updated successfully");
         }
 
+        public async Task<Result> DeleteCustomerProfileAsync(string email)
+        {
+            var customer = await _accountRepository.GetCustomerByEmailAsync(email);
+
+            if (customer == null)
+                return Result.Failure("Customer not found");
+
+            await _accountRepository.DeleteCustomer(customer);
+            return Result.Success("Customer deleted successfully");
+        }
+
         private static string GenerateAccountNumber()
         {
             var random = new Random();

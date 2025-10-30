@@ -10,7 +10,7 @@ namespace CoreBanking.Application.Interfaces.IServices
 {
     public interface ITransactionPinService
     {
-        Task<ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request);
-        Task<bool> VerifyTransactionPinAsync(string userId, string pin);
+        Task<Responses.ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request);
+       
     }
 }

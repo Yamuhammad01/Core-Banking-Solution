@@ -94,7 +94,7 @@ namespace CoreBanking.Api.Controllers
         }
         // customer 
         [Authorize]
-        [HttpGet("cutomer-profile")]
+        [HttpGet("myprofile")]
         public async Task <IActionResult> Profile()
         {
             var customerId = GetUserId();

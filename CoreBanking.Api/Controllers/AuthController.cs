@@ -161,6 +161,14 @@ namespace CoreBanking.Api.Controllers
              var result = await _mediator.Send(command);
             return Ok(new { message = result });
         }
+
+        //change transaction pin 
+        [HttpPost("change-pin")]
+        public async Task<IActionResult> ChangePin([FromBody] ChangePinCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
+        }
     }
     public record LoginRequestDto(string Email, string Password);
 }

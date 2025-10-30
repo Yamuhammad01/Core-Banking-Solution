@@ -63,6 +63,14 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = success });
         }
 
+        [HttpDelete("delete-profile")]
+        public async Task<IActionResult> DeleteProfile(string email)
+        {
+
+            var success = await _accountService.DeleteCustomerProfileAsync(email);
+            return Ok(new { message = success });
+        }
 
     }
+   
 }

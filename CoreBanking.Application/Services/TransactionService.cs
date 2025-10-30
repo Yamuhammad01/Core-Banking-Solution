@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Identity;
 using Refit;
+using CoreBanking.Application.Common;
 using CoreBanking.Application.Responses;
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
@@ -26,8 +27,15 @@ namespace CoreBanking.Application.Services
         private readonly UserManager<Customer> _userManager;
         private readonly ITransactionPinService _pinService;
         private readonly ITransactionEmailService _transactionEmailService;
+        private readonly IPinValidationService _pinValidator;
 
-        public TransactionService(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork uow, IPasswordHasher<Customer> pinHasher, UserManager<Customer> userManager, ITransactionPinService pinService, ITransactionEmailService transactionEmailService)
+        public TransactionService(IAccountRepository accountRepository,
+            ITransactionRepository transactionRepository,
+            IUnitOfWork uow, IPasswordHasher<Customer> pinHasher,
+            UserManager<Customer> userManager,
+            ITransactionPinService pinService, 
+            ITransactionEmailService transactionEmailService,
+            IPinValidationService pinValidationService)
         {
             _accountRepo = accountRepository;
             _txRepo = transactionRepository;
@@ -36,13 +44,15 @@ namespace CoreBanking.Application.Services
             _userManager = userManager;
             _pinService = pinService;
             _transactionEmailService = transactionEmailService;
+            _pinValidator = pinValidationService;
         }
 
-        public async Task<TransferResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
+        public async Task<TransactionResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
         {
-            var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
-            if (!isPinValid)
-                return new() { Success = false, Message = "Invalid Transaction PIN" };
+            var user = await _userManager.FindByIdAsync(userId);
+            var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
+            if (!pinCheck.Success)
+                return   new() { Success = false, Message = "Error Occured" };
 
             var source = await _accountRepo.GetByUserIdAsync(userId);
             var destination = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
@@ -122,7 +132,7 @@ namespace CoreBanking.Application.Services
             return new()
             {
                 Success = true,
-                TransactionReference = reference,
+                Reference = reference,
                 Message = "Transfer successful."
             };
         }
@@ -241,11 +251,12 @@ namespace CoreBanking.Application.Services
             }
         }
         // withdrawal service
-        public async Task<TransactionResponseDto> WithdrawAsync(string userId, WithdrawalRequestDto request)
+        public async Task<Responses.ApiResponses> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
-            var isPinValid = await _pinService.VerifyTransactionPinAsync(userId, request.TransactionPin);
-            if (!isPinValid)
-                return new () { Success = false, Message = "Invalid transaction PIN" };
+            var user = await _userManager.FindByIdAsync(userId);
+            var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
+            if (!pinCheck.Success)
+                return pinCheck;
 
             if (request.Amount <= 0) 
                 return new() { Success = false, Message = "Amount must be greater than 0" };
@@ -295,7 +306,7 @@ namespace CoreBanking.Application.Services
                     date: DateTime.UtcNow 
                 );
 
-                return new TransactionResponseDto
+                return new Responses.ApiResponses
                 {
                     Success = true,
                     Message = "Withdrawal successful",
@@ -306,7 +317,7 @@ namespace CoreBanking.Application.Services
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
-                return new TransactionResponseDto { Success = false, Message = $"Withdrawal failed {ex.Message}" };
+                return new Responses.ApiResponses { Success = false, Message = $"Withdrawal failed {ex.Message}" };
             }
 
 

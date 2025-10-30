@@ -30,6 +30,7 @@ using Microsoft.Extensions.Options;
 using MediatR;
 using CoreBanking.Application.Interfaces.IMailServices;
 using CoreBanking.Application.Security;
+using CoreBanking.Application.Common;
 
 
 
@@ -83,6 +84,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
+builder.Services.AddScoped<IPinValidationService, PinValidationService>();
 
 
 //builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
