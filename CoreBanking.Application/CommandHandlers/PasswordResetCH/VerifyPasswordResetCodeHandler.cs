@@ -47,9 +47,6 @@ namespace CoreBanking.Application.CommandHandlers.PasswordResetCH
             if (record.ExpiresAt < DateTime.UtcNow)
                 return Result.Failure("Confirmation code expired. Please Request a new one");
 
-            if (record.CodeHash != request.Code)
-                return Result.Failure("Invalid code");
-
             // Hash input using stored salt and compare
             var computedHash = _codeHasher.HashCode(request.Code, record.Salt);
             if (!_codeHasher.CryptographicEquals(computedHash, record.CodeHash))

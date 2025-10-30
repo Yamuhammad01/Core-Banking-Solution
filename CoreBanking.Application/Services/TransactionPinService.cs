@@ -43,7 +43,7 @@ namespace CoreBanking.Application.Services
             if (user == null)
                 return new Responses.ApiResponses(false, "User not found");
 
-            var pinCheck = _pinValidator.ValidatePin(request.Pin, user.TransactionPin);
+            var pinCheck = _pinValidator.ValidatePin(request.Pin, user.TransactionPin, user.PinSalt);
             if (!pinCheck.Success)
                 return pinCheck;
 

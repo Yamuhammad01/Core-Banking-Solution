@@ -59,9 +59,9 @@ namespace CoreBanking.Application.CommandHandlers.TransactionPinCH
             {
                 UserId = user.Id,
                 Email = user.Email!,
-                CodeHash = code,
+                CodeHash = codeHash,
                 Salt = salt,
-                Purpose = "EmailConfirmation",
+                Purpose = "TransactionPinReset",
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(10),
                 IsUsed = false

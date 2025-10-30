@@ -15,6 +15,7 @@ using CoreBanking.Application.Interfaces.IServices;
 using Microsoft.Win32;
 using Octokit;
 using System.Security.Principal;
+using CoreBanking.Application.Security;
 
 namespace CoreBanking.Application.Services
 {
@@ -28,6 +29,7 @@ namespace CoreBanking.Application.Services
         private readonly ITransactionPinService _pinService;
         private readonly ITransactionEmailService _transactionEmailService;
         private readonly IPinValidationService _pinValidator;
+        private readonly ICodeHasher _codeHasher;
 
         public TransactionService(IAccountRepository accountRepository,
             ITransactionRepository transactionRepository,
@@ -35,7 +37,8 @@ namespace CoreBanking.Application.Services
             UserManager<Customer> userManager,
             ITransactionPinService pinService, 
             ITransactionEmailService transactionEmailService,
-            IPinValidationService pinValidationService)
+            IPinValidationService pinValidationService,
+            ICodeHasher codeHasher)
         {
             _accountRepo = accountRepository;
             _txRepo = transactionRepository;
@@ -45,6 +48,7 @@ namespace CoreBanking.Application.Services
             _pinService = pinService;
             _transactionEmailService = transactionEmailService;
             _pinValidator = pinValidationService;
+            _codeHasher = codeHasher;
         }
 
         public async Task<TransactionResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
@@ -186,8 +190,6 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                
-
                 return new TransactionResponseDto
                 {
                     Success = true,
@@ -253,10 +255,20 @@ namespace CoreBanking.Application.Services
         // withdrawal service
         public async Task<Responses.ApiResponses> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
+            // var user = await _userManager.FindByIdAsync(userId);
+            // var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
+            // if (!pinCheck.Success)
+            // return pinCheck;
             var user = await _userManager.FindByIdAsync(userId);
-            var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
-            if (!pinCheck.Success)
-                return pinCheck;
+            if (user == null)
+                return new() { Success = false, Message = "User not found" };
+
+            var computedHash = _codeHasher.HashCode(request.TransactionPin, user.PinSalt);
+            if (!_codeHasher.CryptographicEquals(computedHash, user.TransactionPin))
+                return new() { Success = false, Message = "Invalid Transaction PIN" };
+
+            if (string.IsNullOrEmpty(user.TransactionPin) || string.IsNullOrEmpty(user.PinSalt))
+                return new() { Success = false, Message = "User Pin not found" };
 
             if (request.Amount <= 0) 
                 return new() { Success = false, Message = "Amount must be greater than 0" };
