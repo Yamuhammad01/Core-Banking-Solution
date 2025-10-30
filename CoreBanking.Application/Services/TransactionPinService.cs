@@ -5,12 +5,14 @@ using CoreBanking.Application.Security;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Octokit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
@@ -22,16 +24,20 @@ namespace CoreBanking.Application.Services
         private readonly IPasswordHasher<Customer> _pinHasher;
         private readonly ICodeHasher _codeHasher;
         private readonly IPinValidationService _pinValidator;
+        private readonly IBankingDbContext _dbContext;
+        private CancellationToken cancellationToken;
 
         public TransactionPinService(UserManager<Customer> userManager,
             IPasswordHasher<Customer> pinHasher,
             ICodeHasher codeHasher,
-            IPinValidationService pinValidationService)
+            IPinValidationService pinValidationService,
+            IBankingDbContext dbContext)
         {
             _userManager = userManager;
             _pinHasher = pinHasher;
             _codeHasher = codeHasher;
             _pinValidator = pinValidationService;
+            _dbContext = dbContext;
         }
 
         public async Task<Responses.ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request)
@@ -43,20 +49,19 @@ namespace CoreBanking.Application.Services
             if (user == null)
                 return new Responses.ApiResponses(false, "User not found");
 
-            var pinCheck = _pinValidator.ValidatePin(request.Pin, user.TransactionPin, user.PinSalt);
-            if (!pinCheck.Success)
-                return pinCheck;
+            var result = _pinValidator.ValidateAndHashNewPin(request.Pin);
+            if (!result.Success)
+                return result;
 
-            // Generate salt and hash
-            var saltBytes = RandomNumberGenerator.GetBytes(16);
-            var salt = Convert.ToBase64String(saltBytes);
-            var codeHash = _codeHasher.HashCode(request.Pin, salt);
+            if (result.Data == null)
+                return new ApiResponses(false, "Unexpected error: no data returned from pin validator.");
 
-            //Hash the new pin
-            user.TransactionPin = codeHash;
-            user.PinSalt = salt;
-           // user.TransactionPin = _pinHasher.HashPassword(user, request.Pin);
+            dynamic data = result.Data;
+            user.TransactionPin = data.hashedPin;
+            user.PinSalt = data.Salt;
+
             await _userManager.UpdateAsync(user);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new Responses.ApiResponses(true, "Transaction PIN set successfully");
         }

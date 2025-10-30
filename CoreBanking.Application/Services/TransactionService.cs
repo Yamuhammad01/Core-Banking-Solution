@@ -51,12 +51,18 @@ namespace CoreBanking.Application.Services
             _codeHasher = codeHasher;
         }
 
-        public async Task<TransactionResponseDto> TransferFundsAsync(string userId, TransferRequestDto request)
+
+
+
+        public async Task<Responses.ApiResponses> TransferFundsAsync(string userId, TransferRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
-            if (!pinCheck.Success)
-                return   new() { Success = false, Message = "Error Occured" };
+            if (user == null)
+                return new() { Success = false, Message = "User not found" };
+
+            var verify = _pinValidator.VerifyExistingPin(request.TransactionPin, user.TransactionPin, user.PinSalt);
+            if (!verify.Success)
+                return verify;
 
             var source = await _accountRepo.GetByUserIdAsync(userId);
             var destination = await _accountRepo.GetByAccountNumberAsync(request.AccountNumber);
@@ -141,7 +147,7 @@ namespace CoreBanking.Application.Services
             };
         }
 
-        public async Task<TransactionResponseDto> AdminDepositAsync(string adminId, DepositRequestDto request)
+        public async Task<Responses.ApiResponses> AdminDepositAsync(string adminId, DepositRequestDto request)
         {
             if (request.Amount <= 0)
                 return new() { Success = false, Message = "Amount must be greater than zero." };
@@ -190,7 +196,7 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                return new TransactionResponseDto
+                return new Responses.ApiResponses
                 {
                     Success = true,
                     Message = "Deposit successful.",
@@ -201,7 +207,7 @@ namespace CoreBanking.Application.Services
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
-                return new TransactionResponseDto
+                return new Responses.ApiResponses
                 {
                     Success = false,
                     Message = $"Deposit failed: {ex.Message}"
@@ -209,7 +215,7 @@ namespace CoreBanking.Application.Services
             }
         }
 
-        public async Task<TransactionResponseDto> DepositAsync(string userId, DepositRequestDto request)
+        public async Task<Responses.ApiResponses> DepositAsync(string userId, DepositRequestDto request)
         {
             if (request.Amount <= 0) 
                 return new() { Success = false, Message = "Amount must be > 0" };
@@ -244,28 +250,24 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                return new TransactionResponseDto { Success = true, Message = "Deposit successful.", Reference = reference, NewBalance = account.Balance };
+                return new Responses.ApiResponses { Success = true, Message = "Deposit successful.", Reference = reference, NewBalance = account.Balance };
             }
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
-                return new TransactionResponseDto { Success = false, Message = $"Deposit failed: {ex.Message}" };
+                return new Responses.ApiResponses { Success = false, Message = $"Deposit failed: {ex.Message}" };
             }
         }
         // withdrawal service
         public async Task<Responses.ApiResponses> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
-            // var user = await _userManager.FindByIdAsync(userId);
-            // var pinCheck = _pinValidator.ValidatePin(request.TransactionPin, user.TransactionPin);
-            // if (!pinCheck.Success)
-            // return pinCheck;
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return new() { Success = false, Message = "User not found" };
 
-            var computedHash = _codeHasher.HashCode(request.TransactionPin, user.PinSalt);
-            if (!_codeHasher.CryptographicEquals(computedHash, user.TransactionPin))
-                return new() { Success = false, Message = "Invalid Transaction PIN" };
+            var verify = _pinValidator.VerifyExistingPin(request.TransactionPin, user.TransactionPin, user.PinSalt);
+            if (!verify.Success)
+                return verify;
 
             if (string.IsNullOrEmpty(user.TransactionPin) || string.IsNullOrEmpty(user.PinSalt))
                 return new() { Success = false, Message = "User Pin not found" };

@@ -13,6 +13,7 @@ namespace CoreBanking.Application.Responses
         public string Message { get; set; }
         public string? Reference { get; set; }
         public decimal NewBalance { get; set; }
+        public dynamic Data { get; internal set; }
 
         public ApiResponses() { }
 

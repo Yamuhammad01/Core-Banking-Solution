@@ -12,8 +12,8 @@ namespace CoreBanking.Application.Interfaces.IServices
 {
     public interface ITransactionService
     {
-        Task<TransactionResponseDto> TransferFundsAsync(string userId, TransferRequestDto request);
-        Task<TransactionResponseDto> DepositAsync(string UserId, DepositRequestDto request);
+        Task<Responses.ApiResponses> TransferFundsAsync(string userId, TransferRequestDto request);
+        Task<Responses.ApiResponses> DepositAsync(string UserId, DepositRequestDto request);
         Task<Responses.ApiResponses> WithdrawAsync(string userId, WithdrawalRequestDto request);
     }
 }
