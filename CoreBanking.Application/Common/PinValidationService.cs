@@ -12,9 +12,9 @@ namespace CoreBanking.Application.Common
 {
     public interface IPinValidationService
     {
-        ApiResponses ValidateAndHashNewPin(string pin);
-        ApiResponses VerifyExistingPin(string inputPin, string storedHash, string storedSalt);//for transaction operation 
-        ApiResponses ChangePin(string oldPin, string newPin, string storedHash, string storedSalt); 
+        Result ValidateAndHashNewPin(string pin);
+        Result VerifyExistingPin(string inputPin, string storedHash, string storedSalt); //for transaction operation 
+        Result ChangePin(string oldPin, string newPin, string storedHash, string storedSalt);
     }
 
     public class PinValidationService : IPinValidationService
@@ -25,16 +25,16 @@ namespace CoreBanking.Application.Common
             _codeHasher = codeHasher;
         }
 
-        public ApiResponses ValidateAndHashNewPin(string pin)
+        public Result ValidateAndHashNewPin(string pin)
         {
             if (string.IsNullOrEmpty(pin))
-                return new ApiResponses(false, "Please input your transaction PIN");
+                return Result.Failure("Please input your transaction PIN");
 
             if (pin.Length != 4)
-                return new ApiResponses(false, "Transaction PIN must be 4 digits");
+                return Result.Failure("Transaction PIN must be 4 digits");
 
             if (!pin.All(char.IsDigit))
-                return new ApiResponses(false, "Transaction PIN must contain only numbers");
+                return Result.Failure("Transaction PIN must contain only numbers");
 
             // Generate new salt
             var saltBytes = RandomNumberGenerator.GetBytes(16);
@@ -43,38 +43,51 @@ namespace CoreBanking.Application.Common
             // Hash the PIN with the generated salt
             var hashedPin = _codeHasher.HashCode(pin, salt);
 
-            return new ApiResponses(true, "PIN generated successfully");
+            var data = new PinHashResult
+            {
+                HashedPin = hashedPin,
+                Salt = salt
+            };
+
+            return Result.Success("PIN generated successfully", data);
         }
-       // Verify PIN for transactions operations
-        public ApiResponses VerifyExistingPin(string inputPin, string storedHash, string storedSalt)
+
+        // Verify PIN for transactions operations
+        public Result VerifyExistingPin(string inputPin, string storedHash, string storedSalt)
         {
             if (string.IsNullOrEmpty(storedHash) || string.IsNullOrEmpty(storedSalt))
-                return new ApiResponses(false, "User PIN not found");
+                return Result.Failure("User PIN not found");
 
             if (string.IsNullOrEmpty(inputPin))
-                return new ApiResponses(false, "Please input your transaction PIN");
+                return Result.Failure("Please input your transaction PIN");
 
             var computedHash = _codeHasher.HashCode(inputPin, storedSalt);
 
             if (!_codeHasher.CryptographicEquals(computedHash, storedHash))
-                return new ApiResponses(false, "Invalid Transaction PIN");
+                return Result.Failure("Invalid Transaction PIN");
 
-            return new ApiResponses(true, "PIN verification successful");
+            return Result.Success("PIN verification successful");
         }
 
-        public ApiResponses ChangePin(string oldPin, string newPin, string storedHash, string storedSalt)
+        public Result ChangePin(string oldPin, string newPin, string storedHash, string storedSalt)
         {
             // Step 1: Verify old PIN
             var verifyResult = VerifyExistingPin(oldPin, storedHash, storedSalt);
-            if (!verifyResult.Success)
-                return new ApiResponses(false, "Old Transaction PIN is incorrect");
+            if (!verifyResult.Succeeded)
+                return Result.Failure("Old Transaction PIN is incorrect");
 
             // Step 2: Validate and hash new PIN
             var newPinResult = ValidateAndHashNewPin(newPin);
-            if (!newPinResult.Success)
+            if (!newPinResult.Succeeded)
                 return newPinResult;
 
-            return new ApiResponses(true, "Transaction PIN changed successfully");
+            return Result.Success("Transaction PIN changed successfully");
+        }
+
+        public class PinHashResult
+        {
+            public string HashedPin { get; set; }
+            public string Salt { get; set; }
         }
     }
 }

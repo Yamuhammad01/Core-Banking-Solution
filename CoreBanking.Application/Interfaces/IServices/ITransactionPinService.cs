@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Responses;
+﻿using CoreBanking.Application.Common;
+using CoreBanking.Application.Responses;
 using CoreBanking.DTOs.TransactionDto;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace CoreBanking.Application.Interfaces.IServices
 {
     public interface ITransactionPinService
     {
-        Task<Responses.ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request);
+        Task<Result> SetTransactionPinAsync(string userId, SetPinRequestDto request);
        
     }
 }

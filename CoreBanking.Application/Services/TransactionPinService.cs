@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static CoreBanking.Application.Common.PinValidationService;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace CoreBanking.Application.Services
@@ -40,30 +41,27 @@ namespace CoreBanking.Application.Services
             _dbContext = dbContext;
         }
 
-        public async Task<Responses.ApiResponses> SetTransactionPinAsync(string userId, SetPinRequestDto request)
+        public async Task<Result> SetTransactionPinAsync(string userId, SetPinRequestDto request)
         {
             if (request.Pin != request.ConfirmPin)
-                return new Responses.ApiResponses(false, "PINs do not match.");
+                return Result.Failure("PINs do not match.");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return new Responses.ApiResponses(false, "User not found");
+                return Result.Failure("User not found");
 
             var result = _pinValidator.ValidateAndHashNewPin(request.Pin);
-            if (!result.Success)
+            if (!result.Succeeded)
                 return result;
 
-            if (result.Data == null)
-                return new ApiResponses(false, "Unexpected error: no data returned from pin validator.");
-
-            dynamic data = result.Data;
-            user.TransactionPin = data.hashedPin;
+            var data = (PinValidationService.PinHashResult)result.Data;
+            user.TransactionPin = data.HashedPin;
             user.PinSalt = data.Salt;
 
             await _userManager.UpdateAsync(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return new Responses.ApiResponses(true, "Transaction PIN set successfully");
+            return Result.Success("Transaction PIN set successfully");
         }
     }
 }

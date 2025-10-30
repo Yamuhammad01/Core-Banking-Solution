@@ -103,7 +103,7 @@ namespace CoreBanking.Api.Controllers
                 return Unauthorized("Invalid or missing token.");
 
             var result = await _transactionService.WithdrawAsync(userId, dto);
-            return result.Success ? Ok(result) : BadRequest(result);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
         }
 
     }

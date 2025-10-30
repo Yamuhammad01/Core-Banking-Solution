@@ -71,7 +71,7 @@ namespace CoreBanking.Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _pinService.SetTransactionPinAsync(userId, request);
-            return result.Success ? Ok(result) : BadRequest(result);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
         }
 
         [Authorize]

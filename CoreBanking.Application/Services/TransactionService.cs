@@ -50,18 +50,14 @@ namespace CoreBanking.Application.Services
             _pinValidator = pinValidationService;
             _codeHasher = codeHasher;
         }
-
-
-
-
-        public async Task<Responses.ApiResponses> TransferFundsAsync(string userId, TransferRequestDto request)
+        public async Task<Result> TransferFundsAsync(string userId, TransferRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return new() { Success = false, Message = "User not found" };
+                return Result.Failure("User not found");
 
             var verify = _pinValidator.VerifyExistingPin(request.TransactionPin, user.TransactionPin, user.PinSalt);
-            if (!verify.Success)
+            if (!verify.Succeeded)
                 return verify;
 
             var source = await _accountRepo.GetByUserIdAsync(userId);
@@ -69,13 +65,13 @@ namespace CoreBanking.Application.Services
             //var customer = await _accountRepo.GetUserIdAsync(userId);
 
             if (source == null || destination == null)
-                return new() { Success = false, Message = "Invalid account number" };
+                return Result.Failure("Invalid account number");
 
-            if (source ==  destination)
-                return new() { Success = false, Message = "Cannot do self transfer" };
+            if (source == destination)
+                return Result.Failure("Cannot do self transfer");
 
             if (source.Balance < request.Amount)
-                return new() { Success = false, Message = "Insufficient balance" };
+                return Result.Failure("Insufficient balance");
 
             source.Balance -= request.Amount;
             destination.Balance += request.Amount;
@@ -85,12 +81,10 @@ namespace CoreBanking.Application.Services
 
             var reference = Guid.NewGuid().ToString("N");
 
-           var newcustomer = await _accountRepo.GetUserIdAsync(userId);
-           
+            var newcustomer = await _accountRepo.GetUserIdAsync(userId);
 
             await _txRepo.AddAsync(new Transactions
             {
-              
                 BankAccountId = source.Id,
                 UserId = source.CustomerId,
                 Amount = request.Amount,
@@ -98,9 +92,9 @@ namespace CoreBanking.Application.Services
                 Description = request.Narration,
                 Reference = reference
             });
+
             await _txRepo.AddAsync(new Transactions
             {
-
                 BankAccountId = destination.Id,
                 UserId = destination.CustomerId,
                 Amount = request.Amount,
@@ -108,10 +102,11 @@ namespace CoreBanking.Application.Services
                 Description = request.Narration,
                 Reference = reference
             });
+
             var sender = await _accountRepo.GetUserByAccountIdAsync(source.Id);
             var receiver = await _accountRepo.GetUserByAccountIdAsync(destination.Id);
 
-            //  Send a Debit Email Alert to the sender  
+            // Send a Debit Email Alert to the sender  
             await _transactionEmailService.SendTransactionEmailAsync(
                 email: sender.Email,
                 firstName: sender.FirstName,
@@ -125,26 +120,24 @@ namespace CoreBanking.Application.Services
                 senderFullName: null
             );
 
-            //  Send a Credit Email Alert to the receiver with the senders full name
+            // Send a Credit Email Alert to the receiver with the sender's full name
             await _transactionEmailService.SendTransactionEmailAsync(
-                 email: receiver.Email,
-                 firstName: receiver.FirstName,
-                 lastName: receiver.LastName,
-                 transactionType: "Credit",
-                 amount: request.Amount,
-                 accountNumber: destination.AccountNumber,
-                 reference: reference,
-                 balance: destination.Balance,
-                 date: DateTime.UtcNow,
-                 senderFullName: $"{sender.FirstName} {sender.LastName}"
-             );
+                email: receiver.Email,
+                firstName: receiver.FirstName,
+                lastName: receiver.LastName,
+                transactionType: "Credit",
+                amount: request.Amount,
+                accountNumber: destination.AccountNumber,
+                reference: reference,
+                balance: destination.Balance,
+                date: DateTime.UtcNow,
+                senderFullName: $"{sender.FirstName} {sender.LastName}"
+            );
 
-            return new()
+            return Result.Success("Transfer successful.", new
             {
-                Success = true,
-                Reference = reference,
-                Message = "Transfer successful."
-            };
+                Reference = reference
+            });
         }
 
         public async Task<Responses.ApiResponses> AdminDepositAsync(string adminId, DepositRequestDto request)
@@ -259,29 +252,29 @@ namespace CoreBanking.Application.Services
             }
         }
         // withdrawal service
-        public async Task<Responses.ApiResponses> WithdrawAsync(string userId, WithdrawalRequestDto request)
+        public async Task<Result> WithdrawAsync(string userId, WithdrawalRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return new() { Success = false, Message = "User not found" };
+                return Result.Failure("User not found");
 
             var verify = _pinValidator.VerifyExistingPin(request.TransactionPin, user.TransactionPin, user.PinSalt);
-            if (!verify.Success)
+            if (!verify.Succeeded)
                 return verify;
 
             if (string.IsNullOrEmpty(user.TransactionPin) || string.IsNullOrEmpty(user.PinSalt))
-                return new() { Success = false, Message = "User Pin not found" };
+                return Result.Failure("User Pin not found");
 
-            if (request.Amount <= 0) 
-                return new() { Success = false, Message = "Amount must be greater than 0" };
+            if (request.Amount <= 0)
+                return Result.Failure("Amount must be greater than 0");
 
             var account = await _accountRepo.GetByUserIdAsync(userId);
             var customer = await _accountRepo.GetUserIdAsync(userId);
-            if (account == null) 
-                return new() { Success = false, Message = "Source account not found." };
+            if (account == null)
+                return Result.Failure("Source account not found.");
 
-            if (account.Balance < request.Amount) 
-                return new() { Success = false, Message = "Insufficient funds." };
+            if (account.Balance < request.Amount)
+                return Result.Failure("Insufficient funds.");
 
             var reference = Guid.NewGuid().ToString("N");
 
@@ -307,7 +300,7 @@ namespace CoreBanking.Application.Services
                 await _txRepo.AddAsync(tx);
                 await _uow.CommitAsync();
 
-                //  Send Email Alert 
+                // Send Email Alert 
                 await _transactionEmailService.SendTransactionEmailAsync(
                     email: customer.Email,
                     firstName: customer.FirstName,
@@ -317,24 +310,20 @@ namespace CoreBanking.Application.Services
                     accountNumber: account.AccountNumber,
                     reference: reference,
                     balance: account.Balance,
-                    date: DateTime.UtcNow 
+                    date: DateTime.UtcNow
                 );
 
-                return new Responses.ApiResponses
+                return new Result(true, "Withdrawal successful", new
                 {
-                    Success = true,
-                    Message = "Withdrawal successful",
                     Reference = reference,
                     NewBalance = account.Balance
-                };
+                });
             }
             catch (Exception ex)
             {
                 await _uow.RollbackAsync();
-                return new Responses.ApiResponses { Success = false, Message = $"Withdrawal failed {ex.Message}" };
+                return Result.Failure($"Withdrawal failed {ex.Message}");
             }
-
-
         }
 
     }
