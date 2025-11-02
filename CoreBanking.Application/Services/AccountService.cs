@@ -71,6 +71,12 @@ namespace CoreBanking.Application.Services
             return Result.Success("Customer updated successfully");
         }
 
+        // get a customer by email 
+        public async Task<Customer?> GetCustomerByEmailAsync(string email)
+        {
+            return await _accountRepository.GetCustomerByEmailAsync(email);
+        }
+
         public async Task<Result> DeleteCustomerProfileAsync(string email)
         {
             var customer = await _accountRepository.GetCustomerByEmailAsync(email);

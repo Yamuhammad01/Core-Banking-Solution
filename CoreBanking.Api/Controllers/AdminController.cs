@@ -2,6 +2,7 @@
 using CoreBanking.Application.Interfaces;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
+using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Authorization;
@@ -26,13 +27,29 @@ namespace CoreBanking.Api.Controllers
             _transactionService = transactionService;
             _adminService = adminService;
         }
-        //get a customer by id 
-        [HttpGet("getcustomer{id}")]
-        public async Task<IActionResult> GetAccountById(Guid id)
+        //get a customer by email
+        [HttpGet("getcustomer")]
+        public async Task<IActionResult> GetAccountById(string email)
         {
-            var account = await _accountService.GetByIdAsync(id);
-            if (account == null) return NotFound();
-            return Ok(account);
+            var customer = await _accountService.GetCustomerByEmailAsync(email);
+
+            if (customer == null)
+                return NotFound("Customer not found");
+
+            if (customer.BankAccount == null)
+                return NotFound("Customer has no linked bank account.");
+
+            var customerInfo = new ProfileDto
+            {
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber,
+                AccountNumber = customer.BankAccount.AccountNumber
+
+            };
+            return Ok(customerInfo);
+            
         }
 
         [HttpPatch("updatestatus{id}")]

@@ -69,6 +69,7 @@ namespace CoreBanking.Infrastructure.Repository
         public async Task<Customer?> GetCustomerByEmailAsync(string email)
         {
             return await _dbContext.Customers
+                .Include(c => c.BankAccount)
               .FirstOrDefaultAsync(c => c.Email == email);
         }
 

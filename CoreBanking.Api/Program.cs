@@ -69,6 +69,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TransactionPinService>();
+builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 builder.Services.AddScoped(sp =>
     new EmailTemplateService(builder.Environment.ContentRootPath));
@@ -85,7 +86,6 @@ builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
 
 
 //builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
