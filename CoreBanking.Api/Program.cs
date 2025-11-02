@@ -85,6 +85,7 @@ builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 
 //builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();

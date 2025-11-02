@@ -1,5 +1,6 @@
 ﻿using CoreBanking.Application.Common;
 using CoreBanking.Application.Interfaces;
+using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.DTOs.TransactionDto;
@@ -16,10 +17,14 @@ namespace CoreBanking.Api.Controllers
     {
         private readonly AccountService _accountService;
         private readonly TransactionService _transactionService;
-        public AdminController(AccountService accountService, TransactionService transactionService) 
+        private readonly AdminService _adminService;
+        public AdminController(AccountService accountService,
+            TransactionService transactionService,
+            AdminService adminService) 
         { 
             _accountService = accountService;
             _transactionService = transactionService;
+            _adminService = adminService;
         }
         //get a customer by id 
         [HttpGet("getcustomer{id}")]
@@ -71,6 +76,20 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = success });
         }
 
+        [HttpPost("freeze-account")]
+        public async Task<IActionResult> FreezeAccount(string email)
+        {
+            var result = await _adminService.FreezeAccountAsync(email);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("unfreeze")]
+        public async Task<IActionResult> UnfreezeAccount(string email)
+        {
+            var result = await _adminService.UnfreezeAccountAsync(email);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
+        }
     }
-   
+
 }
+   
