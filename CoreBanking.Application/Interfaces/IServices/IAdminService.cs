@@ -13,5 +13,8 @@ namespace CoreBanking.Application.Interfaces.IServices
 
         Task<Result> FreezeAccountAsync(string email);
         Task<Result> UnfreezeAccountAsync(string email);
+        Task<Result> DeactivateAccountAsync(string email);
+        Task<Result> ReactivateAccountAsync(string email);
+
     }
 }

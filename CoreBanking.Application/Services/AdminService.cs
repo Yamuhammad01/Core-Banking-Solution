@@ -33,8 +33,6 @@ namespace CoreBanking.Application.Services
 
             await _userManager.UpdateAsync(user);
 
-           
-
             return Result.Success("Account has been frozen successfully");
         }
 
@@ -54,5 +52,41 @@ namespace CoreBanking.Application.Services
 
             return Result.Failure("Account has been reactivated successfully");
         }
+
+        //deacitvate an account 
+        public async Task<Result> DeactivateAccountAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return Result.Failure("User not found");
+
+            if (!user.IsActive)
+                return Result.Failure("Customer account has been deactivated already");
+
+            user.IsActive = false;
+   
+            await _userManager.UpdateAsync(user);
+
+            return Result.Success("Account has been deactivated successfully");
+        }
+
+        // Reactivate an account 
+        public async Task<Result> ReactivateAccountAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return Result.Failure("User not found");
+
+            if (user.IsActive)
+                return Result.Failure("Account already active");
+
+            user.IsActive = true;
+
+            await _userManager.UpdateAsync(user);
+
+            return Result.Success("Congrats, Your account has been reactivated successfully");
+        }
+
+
     }
 }

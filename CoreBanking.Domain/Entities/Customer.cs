@@ -18,6 +18,7 @@ namespace CoreBanking.Domain.Entities
         public string PinSalt { get; set; } = string.Empty;
         public bool IsFrozen { get; set; } = false;
         public DateTime? FrozenDate { get; set; }
+        public bool IsActive { get; set; } = true;
         public BankAccount BankAccount { get; set; }
 
         public ICollection<Transactions> Transactions { get; set; } = new List<Transactions>();

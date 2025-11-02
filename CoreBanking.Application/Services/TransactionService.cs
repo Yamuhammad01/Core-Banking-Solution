@@ -67,6 +67,13 @@ namespace CoreBanking.Application.Services
             if (source == null || destination == null)
                 return Result.Failure("Invalid account number");
 
+            //check if sender account is frozen 
+            if (source.Customers.IsFrozen)
+                return Result.Failure("Transaction failed. Your account is frozen.");
+            //check if the receiver account is frozen 
+            if (destination.Customers.IsFrozen)
+                return Result.Failure("Can't send funds to this user.The user account is frozen");
+
             if (source == destination)
                 return Result.Failure("Cannot do self transfer");
 
@@ -258,9 +265,16 @@ namespace CoreBanking.Application.Services
             if (user == null)
                 return Result.Failure("User not found");
 
+            if (user.TransactionPin == null)
+                return Result.Failure("User transaction pin not found");
+
             var verify = _pinValidator.VerifyExistingPin(request.TransactionPin, user.TransactionPin, user.PinSalt);
             if (!verify.Succeeded)
                 return verify;
+
+            //check if the account is frozen 
+            if (user.IsFrozen)
+                return Result.Failure("Transaction failed. Your account is frozen.");
 
             if (string.IsNullOrEmpty(user.TransactionPin) || string.IsNullOrEmpty(user.PinSalt))
                 return Result.Failure("User Pin not found");

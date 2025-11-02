@@ -28,7 +28,7 @@ namespace CoreBanking.Api.Controllers
             _adminService = adminService;
         }
         //get a customer by email
-        [HttpGet("getcustomer")]
+        [HttpGet("getcustomerinfo")]
         public async Task<IActionResult> GetAccountById(string email)
         {
             var customer = await _accountService.GetCustomerByEmailAsync(email);
@@ -78,7 +78,7 @@ namespace CoreBanking.Api.Controllers
         }
 
         [HttpPut("update-profile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto request)
+        public async Task<IActionResult> UpdateProfileAsync([FromBody] UpdateProfileDto request)
         {
 
             var success = await _accountService.UpdateCustomerProfileAsync(request);
@@ -86,7 +86,7 @@ namespace CoreBanking.Api.Controllers
         }
 
         [HttpDelete("delete-profile")]
-        public async Task<IActionResult> DeleteProfile(string email)
+        public async Task<IActionResult> DeleteProfileAsync(string email)
         {
 
             var success = await _accountService.DeleteCustomerProfileAsync(email);
@@ -94,16 +94,31 @@ namespace CoreBanking.Api.Controllers
         }
 
         [HttpPost("freeze-account")]
-        public async Task<IActionResult> FreezeAccount(string email)
+        public async Task<IActionResult> FreezeAccountAsync(string email)
         {
             var result = await _adminService.FreezeAccountAsync(email);
             return result.Succeeded ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("unfreeze")]
-        public async Task<IActionResult> UnfreezeAccount(string email)
+        [HttpPost("unfreeze-account")]
+        public async Task<IActionResult> UnfreezeAccountAsync(string email)
         {
             var result = await _adminService.UnfreezeAccountAsync(email);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
+        }
+
+        //deactivate account 
+        [HttpPost("deactivate-account")]
+        public async Task<IActionResult> DeactivateAccountAsync(string email)
+        {
+            var result = await _adminService.DeactivateAccountAsync(email);
+            return result.Succeeded ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("reactivate-account")]
+        public async Task<IActionResult> ReactivateAccountAsync(string email)
+        {
+            var result = await _adminService.ReactivateAccountAsync(email);
             return result.Succeeded ? Ok(result) : BadRequest(result);
         }
     }
