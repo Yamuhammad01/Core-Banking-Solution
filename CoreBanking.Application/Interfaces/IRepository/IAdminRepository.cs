@@ -10,5 +10,9 @@ namespace CoreBanking.Application.Interfaces.IRepository
     public interface IAdminRepository
     {
         Task<List<ProfileDto>> GetAllCustomersAsync();
+        Task<int> GetCustomerCountAsync();
+        Task<int> GetActiveUsersCountAsync();
+        Task<int> GetInactiveUsersCountAsync();
+        Task<List<FrozenAccountDto>> GetAllFrozenAccountAsync();
     }
 }

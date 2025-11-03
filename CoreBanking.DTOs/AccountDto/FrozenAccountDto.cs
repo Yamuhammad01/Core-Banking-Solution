@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.DTOs.AccountDto
 {
-    public class ProfileDto
+    public class FrozenAccountDto
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
@@ -14,6 +14,6 @@ namespace CoreBanking.DTOs.AccountDto
         public string PhoneNumber { get; set; } = string.Empty;
         public string AccountNumber { get; set; } = string.Empty;
         public decimal AccountBalance { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsFrozen { get; set; } 
     }
 }

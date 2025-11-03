@@ -5,6 +5,7 @@ using CoreBanking.Application.Responses;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.AccountDto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,6 +101,30 @@ namespace CoreBanking.Application.Services
         {
             return await _adminRepository.GetAllCustomersAsync();
         }
+
+        // get all frozen accounts 
+        public async Task<List<FrozenAccountDto>> GetAllFrozenAccounts()
+        {
+            return await _adminRepository.GetAllFrozenAccountAsync();
+        }
+
+        public async Task <int> TotalCustomersAsync()
+        {
+            return await _adminRepository.GetCustomerCountAsync();
+
+        }
+        public async Task<int> TotalActiveCustomers()
+        {
+            return await _adminRepository.GetActiveUsersCountAsync();
+
+        }
+
+        public async Task<int> TotalInActiveCustomers()
+        {
+            return await _adminRepository.GetInactiveUsersCountAsync();
+
+        }
+
 
     }
 

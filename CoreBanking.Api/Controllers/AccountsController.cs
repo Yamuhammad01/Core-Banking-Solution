@@ -2,6 +2,7 @@
 using CoreBanking.Application.Common;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
+using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.DTOs.TransactionDto;
@@ -9,9 +10,11 @@ using CoreBanking.Infrastructure.EmailServices;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Octokit;
 using System.Security.Claims;
+using System.Threading.Tasks;
 namespace CoreBanking.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -21,13 +24,18 @@ namespace CoreBanking.Api.Controllers
         private readonly AccountService _accountService;
         private readonly TransactionPinService _pinService;
         private readonly IEmailSenderr _emailSender;
+        private readonly UserManager<Customer> _userManager;    
        
 
-        public AccountsController(AccountService accountService, TransactionPinService transactionPinService, IEmailSenderr emailService)
+        public AccountsController(AccountService accountService, 
+            TransactionPinService transactionPinService,
+            IEmailSenderr emailService,
+            UserManager<Customer> userManager)
         {
             _accountService = accountService;
             _pinService = transactionPinService;
             _emailSender = emailService;
+            _userManager = userManager;
         }
 
         private string GetUserId() =>
@@ -46,24 +54,23 @@ namespace CoreBanking.Api.Controllers
 
         [Authorize]
         [HttpGet("dashboard")]
-        public IActionResult GetDashboard()
+        public async Task<IActionResult> GetDashboard()
         {
-            return Ok("Welcome User — only you can see this.");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            { 
+                return NotFound();
+            }
+            var customer = await _userManager.FindByIdAsync(userId);
+           
+            if (customer == null) 
+            { 
+                return NotFound("Customer not found");
+            }
+           
+            return Ok($"Welcome {customer.FirstName} — only you can see this");
         }
 
-        [HttpGet("send-email")]
-        public async Task <IActionResult> SendEmail()
-        {
-            var message = new Message(
-                new string[] { "idrismuhd418@gmail.com" },
-                "Test email",
-                "This is the content from our email."
-            );
-
-            await _emailSender.SendEmailAsync(message);
-
-            return Ok("Email has been sent successfully!");
-        }
 
         [Authorize]
         [HttpPost("set-pin")]
@@ -75,7 +82,7 @@ namespace CoreBanking.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("myaccount")]
+        [HttpGet("my-account")]
         public async Task<IActionResult> GetMyAccounts()
         {
             var customerId = GetUserId();
@@ -94,7 +101,7 @@ namespace CoreBanking.Api.Controllers
         }
         // customer 
         [Authorize]
-        [HttpGet("myprofile")]
+        [HttpGet("my-profile")]
         public async Task <IActionResult> Profile()
         {
             var customerId = GetUserId();

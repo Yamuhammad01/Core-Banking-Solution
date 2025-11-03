@@ -12,6 +12,7 @@ using System.Security.Claims;
 
 namespace CoreBanking.Api.Controllers
 {
+  //  [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -29,7 +30,7 @@ namespace CoreBanking.Api.Controllers
         }
 
         // get all customers 
-        [HttpGet("getallcustomers")]
+        [HttpGet("get-all-customers")]
         public async Task<IActionResult> GetAllCustomers()
         {
             var customers = await _adminService.GetAllCustomersAsync(); 
@@ -40,8 +41,21 @@ namespace CoreBanking.Api.Controllers
             return Ok(customers);
         }
 
+        // get all frozen accounts 
+        // get all customers 
+        [HttpGet("get-all-frozen-accounts")]
+        public async Task<IActionResult> GetAllFrozenAccountAsync()
+        {
+            var customers = await _adminService.GetAllFrozenAccounts();
+
+            if (customers == null || !customers.Any())
+                return NotFound("No any frozen account found");
+
+            return Ok(customers);
+        }
+
         //get a customer by email
-        [HttpGet("getcustomerinfo")]
+        [HttpGet("get-customerinfo-by-email")]
         public async Task<IActionResult> GetAccountByEmail(string email)
         {
             var customer = await _accountService.GetCustomerByEmailAsync(email);
@@ -58,13 +72,36 @@ namespace CoreBanking.Api.Controllers
                 LastName = customer.LastName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                AccountNumber = customer.BankAccount.AccountNumber
-
+                AccountNumber = customer.BankAccount.AccountNumber,
+                AccountBalance = customer.BankAccount.Balance,
+                IsActive = customer.IsActive
             };
             return Ok(customerInfo);
             
         }
+        //get total number of customers
+        [HttpGet("total-customer")]
+        public async Task<IActionResult> GetCustomerCount()
+        {
+            var totalCustomers = await _adminService.TotalCustomersAsync();
+            return Ok(new { TotalCustomers = totalCustomers });
+        }
 
+        //get total number of active customers
+        [HttpGet("total-active-customers")]
+        public async Task<IActionResult> GetTotalActiveCustomerCountAsync()
+        {
+            var activeCustomers = await _adminService.TotalActiveCustomers();
+            return Ok(new { TotalActiveCustomers = activeCustomers });
+        }
+
+        //get total number of inactive customers
+        [HttpGet("total-inactive-customers")]
+        public async Task<IActionResult> GetTotalInActiveCustomerCountAsync()
+        {
+            var inActiveCustomers = await _adminService.TotalInActiveCustomers();
+            return Ok(new { TotalInActiveCustomers = inActiveCustomers });
+        }
         // Deposit - only Admin can deposit
         [HttpPost("deposit")]
         [Authorize(Roles = "Admin")]

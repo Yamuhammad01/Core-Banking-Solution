@@ -36,7 +36,7 @@ namespace CoreBanking.Api.Controllers
 
         /// Transfer funds between accounts.
         [Authorize]
-        [HttpPost("transfer/funds")]
+        [HttpPost("transfer-funds")]
         [ProducesResponseType(typeof(TransactionResponse), 200)]
         public async Task<IActionResult> Transfer([FromBody] TransferRequestDto request)
         {
@@ -52,7 +52,7 @@ namespace CoreBanking.Api.Controllers
 
         // get the transaction history for the user with the id
         [Authorize]
-        [HttpGet("transactionhistory")]
+        [HttpGet("transaction-history")]
         public async Task<IActionResult> GetTransactions()
         {
 
