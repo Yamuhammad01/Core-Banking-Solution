@@ -27,9 +27,22 @@ namespace CoreBanking.Api.Controllers
             _transactionService = transactionService;
             _adminService = adminService;
         }
+
+        // get all customers 
+        [HttpGet("getallcustomers")]
+        public async Task<IActionResult> GetAllCustomers()
+        {
+            var customers = await _adminService.GetAllCustomersAsync(); 
+
+            if (customers == null || !customers.Any())
+                return NotFound("No customers found.");
+
+            return Ok(customers);
+        }
+
         //get a customer by email
         [HttpGet("getcustomerinfo")]
-        public async Task<IActionResult> GetAccountById(string email)
+        public async Task<IActionResult> GetAccountByEmail(string email)
         {
             var customer = await _accountService.GetCustomerByEmailAsync(email);
 
@@ -52,14 +65,6 @@ namespace CoreBanking.Api.Controllers
             
         }
 
-        [HttpPatch("updatestatus{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateAccountStatusDto updateaccountstatus)
-        {
-            await _accountService.UpdateStatusAsync(id, updateaccountstatus.Status);
-            return NoContent();
-        }
-
         // Deposit - only Admin can deposit
         [HttpPost("deposit")]
         [Authorize(Roles = "Admin")]
@@ -77,7 +82,7 @@ namespace CoreBanking.Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("update-profile")]
+        [HttpPut("update-account")]
         public async Task<IActionResult> UpdateProfileAsync([FromBody] UpdateProfileDto request)
         {
 
@@ -85,7 +90,7 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = success });
         }
 
-        [HttpDelete("delete-profile")]
+        [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteProfileAsync(string email)
         {
 

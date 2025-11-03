@@ -1,7 +1,9 @@
 ﻿using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Responses;
 using CoreBanking.Domain.Entities;
+using CoreBanking.DTOs.AccountDto;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,15 @@ namespace CoreBanking.Application.Services
     public class AdminService : IAdminService
     {
         private readonly UserManager<Customer> _userManager;
-        public AdminService(UserManager<Customer> userManager)
+        private readonly IAccountRepository _accountRepository;
+        private readonly IAdminRepository _adminRepository;
+        public AdminService(UserManager<Customer> userManager, 
+            IAccountRepository accountRepository,
+            IAdminRepository adminRepository)
         {
             _userManager = userManager;
+            _accountRepository = accountRepository;
+            _adminRepository = adminRepository;
         }
 
         public async Task<Result> FreezeAccountAsync(string email)
@@ -87,6 +95,13 @@ namespace CoreBanking.Application.Services
             return Result.Success("Congrats, Your account has been reactivated successfully");
         }
 
+        // get all customers 
+        public async Task<List<ProfileDto>> GetAllCustomersAsync()
+        {
+            return await _adminRepository.GetAllCustomersAsync();
+        }
 
     }
+
 }
+

@@ -80,12 +80,14 @@ builder.Services.AddScoped<ICodeHasher>(provider => provider.GetRequiredService<
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
+
 
 
 //builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();

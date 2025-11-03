@@ -72,6 +72,11 @@ namespace CoreBanking.Api.Controllers
             {
                 return BadRequest("Comfirm your email before login please");
             }
+            //check if account is active
+            if (!user.IsActive)
+            {
+                return BadRequest("Your account is not active");
+            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!result.Succeeded) return Unauthorized("Invalid credentials");

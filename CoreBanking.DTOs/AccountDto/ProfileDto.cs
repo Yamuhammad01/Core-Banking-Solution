@@ -13,5 +13,7 @@ namespace CoreBanking.DTOs.AccountDto
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string AccountNumber { get; set; } = string.Empty;
+        public decimal AccountBalance { get; set; } = decimal.MaxValue;
+        public bool IsActive { get; set; } 
     }
 }

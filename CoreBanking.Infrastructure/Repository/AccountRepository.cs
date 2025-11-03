@@ -2,6 +2,7 @@
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Domain.Entities;
 using CoreBanking.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Octokit;
 using System;
@@ -72,7 +73,14 @@ namespace CoreBanking.Infrastructure.Repository
                 .Include(c => c.BankAccount)
               .FirstOrDefaultAsync(c => c.Email == email);
         }
-
+        //retrive all list of customers
+        public async Task<List<Customer>> GetAllCustomerDetailsAsync()
+        {
+            return await _dbContext.Customers
+                .Include(u => u.BankAccount)
+                .AsNoTracking()
+                .ToListAsync();
+        }
         public async Task<BankAccount?> GetByIdAsync(Guid id)
         {
             return await _dbContext.BankAccounts.FindAsync(id);
