@@ -70,7 +70,7 @@ namespace CoreBanking.Api.Controllers
 
             if (!user.EmailConfirmed)
             {
-                return BadRequest("Comfirm your email before login please");
+                return BadRequest("Verify your email before login please");
             }
             //check if account is active
             if (!user.IsActive)

@@ -80,7 +80,7 @@ namespace CoreBanking.Api.Controllers
             
         }
         //get total number of customers
-        [HttpGet("total-customer")]
+        [HttpGet("total-customers")]
         public async Task<IActionResult> GetCustomerCount()
         {
             var totalCustomers = await _adminService.TotalCustomersAsync();

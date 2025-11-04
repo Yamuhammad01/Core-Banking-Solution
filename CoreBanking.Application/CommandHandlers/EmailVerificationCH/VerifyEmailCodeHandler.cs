@@ -47,9 +47,14 @@ namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
+           
+
             // check for confirmation codes from the db
             if (record == null)
                 return Result.Failure("Confirmation code not found");
+
+            if (record.IsUsed)
+                return Result.Failure("Email already verified");
 
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)

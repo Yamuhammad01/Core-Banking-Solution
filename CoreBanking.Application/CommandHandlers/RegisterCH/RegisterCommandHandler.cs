@@ -115,7 +115,7 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 //commit everything 
                 await _uow.CommitAsync();
 
-                return Result.Success("Registration successful! Please check your email for the confirmation code.");
+                return Result.Success("Registration successful! Please check your email (spam) for the confirmation code.");
             }
             catch (Exception)
             {
