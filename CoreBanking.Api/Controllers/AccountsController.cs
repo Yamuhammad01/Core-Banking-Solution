@@ -116,7 +116,9 @@ namespace CoreBanking.Api.Controllers
                 LastName = customer.LastName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                AccountNumber = customer.BankAccount.AccountNumber
+                AccountNumber = customer.BankAccount.AccountNumber,
+                AccountBalance = customer.BankAccount.Balance,
+                IsActive = customer.IsActive
 
             };
             return Ok(customerInfo);
