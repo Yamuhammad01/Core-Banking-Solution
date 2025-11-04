@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,7 +70,7 @@ namespace CoreBanking.Infrastructure.Repository
             return await _dbContext.Customers
                 .CountAsync();
         }
-        //get total number of active users
+        //get total number of active customers
         public async Task<int> GetActiveUsersCountAsync()
         {
             return await _dbContext.Customers.CountAsync(u => u.IsActive == true);
