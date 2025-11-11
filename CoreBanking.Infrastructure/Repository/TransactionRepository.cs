@@ -1,12 +1,6 @@
 ﻿using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreBanking.Domain.Entities;
-using System.Security.Principal;
 using CoreBanking.Application.Interfaces.IRepository;
 
 namespace CoreBanking.Infrastructure.Repository
