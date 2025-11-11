@@ -1,17 +1,11 @@
 ﻿using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
-using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using CoreBanking.Domain.Enums;
 using CoreBanking.Infrastructure.EmailServices;
-using CoreBanking.Infrastructure.EmailServices;
-using Microsoft.Win32;
-using Octokit;
 
 namespace CoreBanking.Api.Controllers
 {

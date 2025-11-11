@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CoreBanking.DTOs.TransactionDto
+﻿namespace CoreBanking.DTOs.TransactionDto
 {
     public class SetPinRequestDto
     {

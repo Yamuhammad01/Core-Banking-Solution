@@ -1,13 +1,7 @@
 ﻿using CoreBanking.Application.Common;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreBanking.Domain.Entities;
-using Microsoft.Win32;
 using Microsoft.EntityFrameworkCore;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Interfaces.IMailServices;

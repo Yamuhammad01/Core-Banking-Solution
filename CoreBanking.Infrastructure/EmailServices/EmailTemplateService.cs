@@ -1,18 +1,12 @@
 ﻿using CoreBanking.Application.Interfaces.IMailServices;
-using System;
-using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CoreBanking.Infrastructure.EmailServices
 {
     public class EmailTemplateService : IEmailTemplateService
     {
-        private readonly string _contentRootPath;
-
         public EmailTemplateService(string contentRootPath)
         {
-            _contentRootPath = contentRootPath;
         }
 
         public async Task<string> GetWelcomeTemplateAsync(string firstName, string lastName, string accountNumber, string currency)

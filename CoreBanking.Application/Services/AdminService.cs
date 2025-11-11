@@ -1,18 +1,9 @@
 ﻿using CoreBanking.Application.Common;
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
-using CoreBanking.Application.Responses;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs.AccountDto;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using OfficeOpenXml;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Services
 {

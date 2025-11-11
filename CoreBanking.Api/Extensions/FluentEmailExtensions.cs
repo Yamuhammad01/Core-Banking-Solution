@@ -1,6 +1,4 @@
 ﻿using CoreBanking.Infrastructure.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreBanking.Api.Extensions
 {

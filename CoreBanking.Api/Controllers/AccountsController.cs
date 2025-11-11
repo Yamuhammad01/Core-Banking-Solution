@@ -1,20 +1,13 @@
-﻿using CoreBanking.Application.CommandHandlers;
-using CoreBanking.Application.Common;
-using CoreBanking.Application.Interfaces.IServices;
+﻿using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Services;
 using CoreBanking.Domain.Entities;
-using CoreBanking.DTOs;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.DTOs.TransactionDto;
-using CoreBanking.Infrastructure.EmailServices;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Octokit;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 namespace CoreBanking.Api.Controllers
 {
     [Route("api/[controller]")]
