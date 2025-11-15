@@ -59,3 +59,73 @@ flowchart TB
     B --> C[Domain Layer: Entities & Interfaces]
     C --> D[Infrastructure Layer: EF Core, Identity, Repositories]
     D --> E[PostgreSQL Database]
+```
+---
+
+## Folder Structure
+```
+CoreBankingSolution/
+│
+├─ src/
+│   ├─ CoreBanking.Domain/           # Entities, Interfaces, Value Objects
+│   ├─ CoreBanking.DTO/              # DTOs
+│   ├─ CoreBanking.Application/      # Services, Use Cases, CQRS
+│   ├─ CoreBanking.Infrastructure/   # EF Core, Repositories, Identity
+│   └─ CoreBanking.API/              # Controllers, Program.cs
+│
+├─ docker/                           # Docker configurations 
+└─ README.md
+```
+---
+
+## Tech Stack
+```
+Layer	Technology
+Backend	ASP.NET Core 8, C#
+Database	PostgreSQL
+ORM	Entity Framework Core
+Authentication	ASP.NET Core Identity + JWT
+Architecture	Clean Architecture, Repository Pattern
+API         	RESTful API 
+Version Control	Git / GitHub
+```
+---
+
+## Installation & Setup
+
+### Prerequisites
+Before you begin, make sure you have the following installed:
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  
+- [PostgreSQL](https://www.postgresql.org/download/)  
+- [Git](https://git-scm.com/downloads)  
+
+---
+
+### Steps
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/Yamuhammad01/Core-Banking-Solution/.git
+```
+2. **Restore dependencies**
+```bash
+dotnet restore
+
+```
+2. **Create database migration**
+```bash
+Add-Migration "InitialCreate"
+```
+3. **Update Database**
+```bash
+Update-Database
+```
+3. **Run the API**
+```bash
+dotnet run
+
+```
+
+
