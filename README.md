@@ -59,17 +59,3 @@ flowchart TB
     B --> C[Domain Layer: Entities & Interfaces]
     C --> D[Infrastructure Layer: EF Core, Identity, Repositories]
     D --> E[PostgreSQL Database]
-
-## Folder Structure
-CoreBankingSolution/
-│
-├─ src/
-│   ├─ CoreBanking.Domain/             -Entities, Interfaces, Value Objects
-│   ├─ CoreBanking.DTO/                -DTOs
-│   ├─ CoreBanking.Application/        -Services, Use Cases, DTOs
-│   ├─ CoreBanking.Infrastructure/     -EF Core, Repositories, Identity
-│   └─ CoreBanking.API/                -Controllers, Program.cs
-│
-├─ docker/                           -Docker configurations 
-└─ README.md
-
