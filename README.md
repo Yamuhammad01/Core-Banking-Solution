@@ -169,4 +169,24 @@ This section documents all the main endpoints of the Core Banking API, including
 **Headers:**
 ```http
 Content-Type: application/json
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+```
+### **Responses**
+```http
+Content-Type: application/json
+{
+  "token": "<JWT_TOKEN>",
+  "expiresIn": 3600
+}
+```
+---
+## Validation & Security
+```
+• Passwords hashed using ASP.NET Core Identity
+• JWT Authentication & Role-based Authorization
 
+```
+---
