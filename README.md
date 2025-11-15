@@ -78,16 +78,18 @@ CoreBankingSolution/
 ```
 ---
 
-## Tech Stack
+## 🧰 Tech Stack Used:
 ```
-Layer	Technology
-Backend	ASP.NET Core 8, C#
-Database	PostgreSQL
-ORM	Entity Framework Core
-Authentication	ASP.NET Core Identity + JWT
-Architecture	Clean Architecture, Repository Pattern
-API         	RESTful API 
-Version Control	Git / GitHub
+• .NET Core (C#)
+• Entity Framework Core
+• PostgreSQL
+• ASP.NET Identity
+• JWT Authentication
+• Clean Architecture
+• Repository Pattern & Dependency Injection
+• Command Query Responsibility Segregation (CQRS)
+• Unit of Work & Database Transactions
+• SendGrid SMTP (for email services) 
 ```
 ---
 
@@ -125,7 +127,46 @@ Update-Database
 3. **Run the API**
 ```bash
 dotnet run
+```
+4. **Access API at https://localhost:yourport**
+
+---
+
+## Database Setup
+```
+• Database: CoreBankingDB
+• Tables: Users, Roles, Customers, Accounts, Transactions, ConfirmationCodes
 
 ```
+---
+## API Documentation
 
+This section documents all the main endpoints of the Core Banking API, including sample requests, responses, and expected HTTP status codes.
+
+---
+
+### **Endpoints Overview**
+
+| Endpoint                      | Method | Description                     | Status Codes |
+|-------------------------------|--------|---------------------------------|--------------|
+| `/api/customers`             | GET    | Get all customers               | 200 OK      |
+| `/api/customers/{id}`        | GET    | Get customer by ID              | 200 OK, 404 Not Found |
+| `/api/customers`             | POST   | Create a new customer           | 201 Created, 400 Bad Request |
+| `/api/accounts`              | POST   | Create a new bank account       | 201 Created, 400 Bad Request |
+| `/api/accounts/{id}`         | GET    | Get account details by ID       | 200 OK, 404 Not Found |
+| `/api/transactions/deposit`  | POST   | Deposit into an account         | 200 OK, 400 Bad Request |
+| `/api/transactions/withdraw` | POST   | Withdraw from an account        | 200 OK, 400 Bad Request, 403 Forbidden |
+| `/api/transactions/transfer` | POST   | Transfer between accounts       | 200 OK, 400 Bad Request, 403 Forbidden |
+| `/api/auth/login`            | POST   | User login & JWT generation     | 200 OK, 400 Bad Request, 401 Unauthorized |
+
+---
+
+### **Example Requests & Responses**
+
+#### **1. User Login**
+
+**POST** `/api/auth/login`  
+**Headers:**
+```http
+Content-Type: application/json
 
