@@ -1,16 +1,7 @@
-﻿using CoreBanking.Application.Common;
-using CoreBanking.Application.Interfaces.IRepository;
-using CoreBanking.Application.Interfaces.IServices;
+﻿using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoreBanking.Infrastructure.Repository
 {

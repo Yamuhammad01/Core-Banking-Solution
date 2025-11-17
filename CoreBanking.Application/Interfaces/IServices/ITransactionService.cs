@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoreBanking.Application.Common;
-using CoreBanking.Application.Responses;
+﻿using CoreBanking.Application.Common;
 using CoreBanking.DTOs.TransactionDto;
-using Octokit.Internal;
-using Refit;
 
 namespace CoreBanking.Application.Interfaces.IServices
 {

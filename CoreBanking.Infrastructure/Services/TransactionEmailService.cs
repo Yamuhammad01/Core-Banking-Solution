@@ -1,12 +1,6 @@
 ﻿using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Infrastructure.EmailServices;
 using Microsoft.Extensions.Logging;
-using NETCore.MailKit.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreBanking.Application.Common;
 namespace CoreBanking.Infrastructure.Services
 {
@@ -53,17 +47,17 @@ namespace CoreBanking.Infrastructure.Services
                 );
 
                 var message = new Message(
-                    new[] { email },
-                    $"{transactionType} Alert - ₦{amount:N2}",
+                    [email],
+                    $"{transactionType} Alert - ₦{amount:N2}", 
                     emailBody
                 );
 
                 await _emailSender.SendEmailAsync(message);
-                _logger.LogInformation($"Transaction email sent successfully to {email}");
+                _logger.LogInformation("Transaction email sent successfully to {Email}", email);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to send transaction email: {ex.Message}");
+                _logger.LogError("Failed to send transaction email: {ExMessage}", ex.Message); 
             }
         }
     }

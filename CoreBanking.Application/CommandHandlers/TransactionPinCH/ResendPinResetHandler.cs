@@ -1,12 +1,6 @@
 ﻿using CoreBanking.Application.Command.TransactionPinCommand;
 using CoreBanking.Application.Common;
-using CoreBanking.Application.Interfaces.IServices;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoreBanking.Application.CommandHandlers.TransactionPinCH
 {

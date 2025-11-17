@@ -1,20 +1,10 @@
 ﻿using CoreBanking.Domain.Enums;
 using CoreBanking.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Identity;
-using Refit;
 using CoreBanking.Application.Common;
-using CoreBanking.Application.Responses;
 using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
-using Microsoft.Win32;
-using Octokit;
-using System.Security.Principal;
 using CoreBanking.Application.Security;
 
 namespace CoreBanking.Application.Services
