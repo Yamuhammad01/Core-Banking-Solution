@@ -20,7 +20,8 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 - [Installation & Setup](#installation--setup)  
 - [Database Setup](#database-setup)  
 - [API Documentation](#api-documentation)
-- [How to Simulate Transfer Between Accounts](#api-documentation) 
+- [How to Simulate Deposit & Transfer Between Accounts](#how-to-simulate-deposit--transfer-between-accounts)
+- [Example Requests & Responses](#example-requests--responses)  
 - [Validation & Security](#validation--security)  
 - [Contributing](#contributing)  
 - [License](#license)  
@@ -153,24 +154,24 @@ This section documents all the main endpoints of the Core Banking API, including
 
 | Endpoint                      | Method | Description                     | Status Codes |
 |-------------------------------|--------|---------------------------------|--------------|
-| `/api/customers`             | GET    | Get all customers               | 200 OK      |
-| `/api/customers/{id}`        | GET    | Get customer by ID              | 200 OK, 404 Not Found |
-| `/api/customers`             | POST   | Create a new customer           | 201 Created, 400 Bad Request |
-| `/api/accounts`              | POST   | Create a new bank account       | 201 Created, 400 Bad Request |
-| `/api/accounts/{id}`         | GET    | Get account details by ID       | 200 OK, 404 Not Found |
-| `/api/transactions/deposit`  | POST   | Deposit into an account         | 200 OK, 400 Bad Request |
+| `/api/admin/get-all-customers`             | GET    | Get all customers               | 200 OK      |
+| `/api/admin/get-customers-by-email`        | GET    | Get customer by Email             | 200 OK, 404 Not Found |
+| `/api/admin/deposit`  | POST   | Deposit into an account         | 200 OK, 400 Bad Request |
+| `/api/auth/customers/register`             | POST   | Register a new customer           | 201 Created, 400 Bad Request |
+| `/api/customer/auth/login`            | POST   | User login & JWT generation     | 200 OK, 400 Bad Request, 401 Unauthorized |
 | `/api/transactions/withdraw` | POST   | Withdraw from an account        | 200 OK, 400 Bad Request, 403 Forbidden |
-| `/api/transactions/transfer` | POST   | Transfer between accounts       | 200 OK, 400 Bad Request, 403 Forbidden |
-| `/api/auth/login`            | POST   | User login & JWT generation     | 200 OK, 400 Bad Request, 401 Unauthorized |
+| `/api/transactions/transfer-funds` | POST   | Transfer between accounts       | 200 OK, 400 Bad Request, 403 Forbidden |
+| `/api/transactions/transaction-history` | GET   | View transaction history       | 200 OK, 400 Bad Request, 403 Forbidden |
+
 
 ---
 
-## How to Simulate Deposit and Transfer Between Accounts
+## How to Simulate Deposit & Transfer Between Accounts
 
 This section explains how to test **deposit** and **transfer** operations inside the Core Banking Solution using the built-in simulation endpoints. These endpoints are strictly for **development and testing purposes**.
 
 ##  Deposit Simulation
-### **1. Register a New User**
+### **1. Register a New Customer**
 - Submit a registration request.
 -  A unique **account number** is automatically generated.
 -  Account details are sent to the registered email  
