@@ -21,7 +21,6 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 - [API Documentation](#api-documentation)  
 - [Project Showcase](#project-showcase)  
 - [Validation & Security](#validation--security)  
-- [Testing](#testing)  
 - [Contributing](#contributing)  
 - [License](#license)  
 - [Author](#author)
@@ -188,5 +187,27 @@ Content-Type: application/json
 • Passwords hashed using ASP.NET Core Identity
 • JWT Authentication & Role-based Authorization
 
+```
+---
+## Contributing
+```
+• Fork the repository
+• Create a feature branch: git checkout -b feature/XYZ..Feature
+• Commit your changes: git commit -m "Added xyz... feature"
+• Push to branch: git push origin feature/XYZ..Feature
+• Open a Pull Request
+```
+---
+## API Documentation
+
+This project is licensed under the MIT License.
+
+---
+## Author
+Muhammad Idris
+```
+• GitHub: https://github.com/Yamuhammad01
+• LinkedIn: https://www.linkedin.com/in/muhammad-idrisb2/
+• Email: idrismuhd814@gmail.com
 ```
 ---
