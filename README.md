@@ -5,7 +5,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-A **robust backend solution for core banking operations**, built using **ASP.NET Core 8**, **C#**, and **PostgreSQL**, following the **Clean Architecture** principles. This project demonstrates a modular, maintainable, and secure backend system suitable for financial applications.
+A **robust backend solution for core banking operations**, built using **ASP.NET Core 8**, **C#**, and **PostgreSQL**, while following the **Clean Architecture** principles. This project demonstrates a modular, maintainable, and secure backend system suitable for financial applications.
 
 ---
 
@@ -19,7 +19,6 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 - [Installation & Setup](#installation--setup)  
 - [Database Setup](#database-setup)  
 - [API Documentation](#api-documentation)  
-- [Project Showcase](#project-showcase)  
 - [Validation & Security](#validation--security)  
 - [Contributing](#contributing)  
 - [License](#license)  
@@ -29,11 +28,13 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 
 ## Overview
 
-The **Core Banking Solution** backend allows management of banking operations, including customer accounts, transactions, and user roles. It demonstrates:
+The **Core Banking Solution** simulates user account creation, fund transfers, deposits, withdrawals and transaction history with authentication and authorization using ASP.NET Core while following the Clean Architecture Pattern, Microservices and the Repository Pattern.
+
+It demonstrates:
 
 - Clean architecture separation: Domain, Application, Infrastructure, Presentation  
 - Secure authentication & authorization with **ASP.NET Core Identity** and **JWT**  
-- RESTful API with HATEOAS support for scalable services  
+- RESTful APIs 
 - Automated validation pipelines and error handling  
 
 ---
@@ -41,10 +42,10 @@ The **Core Banking Solution** backend allows management of banking operations, i
 ## Features
 
 - **Customer Management:** Register, update, and retrieve customer information  
-- **Bank Accounts:** Create, close, and manage multiple accounts per customer  
+- **Bank Accounts:** Create and manage accounts per customer  
 - **Transactions:** Deposit, withdrawal, transfer, and transaction history  
-- **Role-based Access Control:** Admin, Teller, and Customer roles  
-- **Validation Pipeline:** Ensures DRY principles, input validation, and domain rules  
+- **Role-based Access Control:** Admin and Customer roles  
+- **Validation Pipeline:** Ensures input validation and domain rules  
 - **Security:** Password hashing, JWT authentication, and claims-based authorization  
 - **Logging & Auditing:** Tracks critical actions for accountability  
 
@@ -77,7 +78,7 @@ CoreBankingSolution/
 ```
 ---
 
-## 🧰 Tech Stack Used:
+## Tech Stack
 ```
 • .NET Core (C#)
 • Entity Framework Core
@@ -134,7 +135,7 @@ dotnet run
 ## Database Setup
 ```
 • Database: CoreBankingDB
-• Tables: Users, Roles, Customers, Accounts, Transactions, ConfirmationCodes
+• Tables: AspNetUsers, AspNetUserTokens, AspNetUserRoles, AspNetUserLogins, AspNetUserClaims, AspNetRoles, AspNetRoleClaims, Accounts, Transactions, ConfirmationCodes
 
 ```
 ---
@@ -190,24 +191,24 @@ Content-Type: application/json
 ```
 ---
 ## Contributing
-```
-• Fork the repository
-• Create a feature branch: git checkout -b feature/XYZ..Feature
-• Commit your changes: git commit -m "Added xyz... feature"
-• Push to branch: git push origin feature/XYZ..Feature
-• Open a Pull Request
-```
+
+• Fork the repository  <br>
+• Create a feature branch: git checkout -b feature/XYZ..Feature <br>
+• Commit your changes: git commit -m "Added xyz... feature" <br>
+• Push to branch: git push origin feature/XYZ..Feature <br>
+• Open a Pull Request <br>
+
 ---
-## API Documentation
+## License
 
 This project is licensed under the MIT License.
 
 ---
 ## Author
 Muhammad Idris
-```
-• GitHub: https://github.com/Yamuhammad01
-• LinkedIn: https://www.linkedin.com/in/muhammad-idrisb2/
-• Email: idrismuhd814@gmail.com
-```
+
+• GitHub: https://github.com/Yamuhammad01 <br>
+• LinkedIn: https://www.linkedin.com/in/muhammad-idrisb2/ <br>
+• Email: idrismuhd814@gmail.com <br>
+
 ---
