@@ -1,0 +1,22 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "EmailConfiguration": {
+    "From": "",
+    "SendGridApiKey": ""
+  },
+  "JwtSettings": {
+    "Key": "",
+    "Issuer": "",
+    "Audience": "",
+    "DurationInMinutes": 60
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": ""
+  },
+  "AllowedHosts": "*"
+}
