@@ -87,7 +87,7 @@ namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
             _db.EmailConfirmations.Add(record);
             await _db.SaveChangesAsync(cancellationToken);
 
-            // Build email content (use template service in real app)
+            // Build email content 
             var html = $@"
             <p>Hi {user.UserName},</p>
             <p>Your email confirmation code is <strong>{code}</strong>.</p>

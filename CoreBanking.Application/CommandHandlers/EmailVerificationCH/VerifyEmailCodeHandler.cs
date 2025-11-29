@@ -53,8 +53,6 @@ namespace CoreBanking.Application.CommandHandlers.EmailVerificationCH
             if (record == null)
                 return Result.Failure("Confirmation code not found");
 
-            if (record.IsUsed)
-                return Result.Failure("Email already verified");
 
             // check if the code has expired   
             if (record.ExpiresAt < DateTime.UtcNow)
