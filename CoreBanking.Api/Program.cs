@@ -78,6 +78,19 @@ builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 builder.Services.AddScoped(sp =>
     new EmailTemplateService(builder.Environment.ContentRootPath));
 
+var baseUrl = builder.Configuration["Monnify:BaseUrl"];
+if (string.IsNullOrEmpty(baseUrl))
+{
+    throw new Exception("Monnify:BaseUrl is not configured in appsettings.json");
+}
+
+builder.Services.AddHttpClient<IMonnifyService, MonnifyService>(client =>
+{
+    client.BaseAddress = new Uri(baseUrl);
+    Console.WriteLine("HttpClient BaseAddress: " + client.BaseAddress);
+});
+
+
 builder.Services.AddScoped<IBankingDbContext>(provider => provider.GetRequiredService<CoreBankingDbContext>());
 builder.Services.AddScoped<IEmailTemplateService>(provider => provider.GetRequiredService<EmailTemplateService>());
 builder.Services.AddScoped<ICodeHasher>(provider => provider.GetRequiredService<CodeHasher>());
@@ -92,6 +105,11 @@ builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
 builder.Services.AddHostedService<RegistrationConsumer>();
+
+builder.Services.AddHttpClient<IMonnifyService, MonnifyService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Monnify:BaseUrl"]);
+});
 
 
 

@@ -16,7 +16,8 @@ namespace CoreBanking.Domain.Entities
         public string Currency { get; set; } = "NGN";
         public string Status { get; set; } = "PendingApproval";
         public int? TransactionPin { get; set; }
-
+        public Guid? UserId { get; set; }
+        public string? BankName { get; set; }
         public string CustomerId { get; set; } = default!; // Identity UserId (FK)
 
         [JsonIgnore]
