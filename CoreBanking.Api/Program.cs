@@ -7,6 +7,7 @@ using CoreBanking.Application.Interfaces.IRepository;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Application.Security;
 using CoreBanking.Application.Services;
+using CoreBanking.Application.Shared;
 using CoreBanking.Domain.Entities;
 using CoreBanking.DTOs;
 using CoreBanking.Infrastructure.Configuration;
@@ -29,6 +30,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
@@ -90,6 +92,20 @@ builder.Services.AddHttpClient<IMonnifyService, MonnifyService>(client =>
     Console.WriteLine("HttpClient BaseAddress: " + client.BaseAddress);
 });
 
+var paystackBaseUrl = builder.Configuration["Paystack:BaseUrl"];
+Console.WriteLine("Paystack HttpClient BaseAddress: " + paystackBaseUrl);
+
+// Register PaystackService with HttpClient and BaseAddress
+builder.Services.AddHttpClient<IPayStackService, PaystackService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<PaystackSettings>>().Value;
+
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    client.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer", settings.SecretKey);
+});
+
+
 
 builder.Services.AddScoped<IBankingDbContext>(provider => provider.GetRequiredService<CoreBankingDbContext>());
 builder.Services.AddScoped<IEmailTemplateService>(provider => provider.GetRequiredService<EmailTemplateService>());
@@ -105,11 +121,10 @@ builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
 builder.Services.AddHostedService<RegistrationConsumer>();
+//builder.Services.AddHttpClient<IVirtualAccountService, PaystackService>();
+builder.Services.Configure<PaystackSettings>(
+    builder.Configuration.GetSection("Paystack"));
 
-builder.Services.AddHttpClient<IMonnifyService, MonnifyService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["Monnify:BaseUrl"]);
-});
 
 
 

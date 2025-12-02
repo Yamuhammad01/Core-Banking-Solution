@@ -7,29 +7,28 @@ using CoreBanking.Application.Shared;
 using CoreBanking.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Octokit;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static CoreBanking.Application.Services.PaystackService;
 
-namespace CoreBanking.Application.CommandHandlers.RegisterCH
+/* namespace CoreBanking.Application.CommandHandlers.RegisterCH
 {
-  /*  public class MoonifyRegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
+    public class PaystackRegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
     {
         private readonly UserManager<Customer> _userManager;
         private readonly IUnitOfWork _uow;
-        private readonly IMonnifyService _monnifyService;
+       // private readonly IVirtualAccountService _paystackService;
         private readonly IBankingDbContext _dbContext;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly IEmailSenderr _emailSender;
         private readonly IMediator _mediator;
 
-        public MoonifyRegisterCommandHandler(
+        public PaystackRegisterCommandHandler(
             UserManager<Customer> userManager,
             IUnitOfWork uow,
-            IMonnifyService monnifyService,
+           // IVirtualAccountService paystackService,
             IBankingDbContext dbContext,
             IEmailTemplateService emailTemplateService,
             IEmailSenderr emailSender,
@@ -37,14 +36,14 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
         {
             _userManager = userManager;
             _uow = uow;
-            _monnifyService = monnifyService;
+           // _paystackService = paystackService;
             _dbContext = dbContext;
             _emailTemplateService = emailTemplateService;
             _emailSender = emailSender;
             _mediator = mediator;
         }
 
-        public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
+         public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             if (request.Password != request.ConfirmPassword)
                 return Result.Failure("Passwords do not match.");
@@ -72,24 +71,23 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 if (!identityResult.Succeeded)
                     return Result.Failure(string.Join(", ", identityResult.Errors.Select(e => e.Description)));
 
-                // 2. Call Monnify immediately and receive account details immediately
-                var monnifyResponse = await _monnifyService.CreateDedicatedVirtualAccountAsync(new MonnifyAccountRequest
+                //  Call Paystack to create a dedicated virtual account
+                var paystackResponse = await _paystackService.CreateDedicatedVirtualAccountAsync(new PaystackAccountRequest
                 {
-                   CustomerEmail = user.Email,
+                    CustomerEmail = user.Email,
                     CustomerName = $"{user.FirstName} {user.LastName}",
-                    CustomerId = user.Id.ToString(),
-                    
+                    CustomerId = user.Id
                 });
 
-                if (!monnifyResponse.Success)
-                    throw new Exception("Failed to create Monnify virtual account.");
+                if (!paystackResponse.Success)
+                    throw new Exception("Failed to create Paystack virtual account.");
 
-                // 3. Store the Monnify-generated bank account
+                // 3. Store the Paystack-generated bank account
                 var bankAccount = new BankAccount
                 {
                     CustomerId = user.Id,
-                    AccountNumber = monnifyResponse.AccountNumber,
-                    BankName = monnifyResponse.BankName,
+                    AccountNumber = paystackResponse.AccountNumber,
+                    BankName = paystackResponse.BankName,
                     Balance = 0m,
                     AccountType = "Savings",
                     Currency = "NGN",
@@ -127,8 +125,7 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
 
                 return Result.Failure($"Registration failed: {ex.Message}");
             }
-        }
-    } */
-
-
+        }  
+    } 
 }
+*/

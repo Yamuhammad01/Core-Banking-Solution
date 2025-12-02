@@ -17,6 +17,7 @@ using CoreBanking.Application.Command.PasswordResetCommand;
 using CoreBanking.Application.Command.EmailConfirmationCommand;
 using CoreBanking.Application.Command.RegisterCommand;
 using CoreBanking.Application.Command.TransactionPinCommand;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 
 namespace CoreBanking.Api.Controllers
@@ -32,14 +33,17 @@ namespace CoreBanking.Api.Controllers
         private readonly IEmailSenderr _emailSender;
         private readonly EmailTemplateService _emailTemplateService;
         private readonly IMediator _mediator;
+        private readonly IPayStackService _paystackService;
         public AuthController(
             UserManager<Customer> userManager, 
-            SignInManager<Customer> signInManager, 
-            JwtService jwtService, 
+            SignInManager<Customer> signInManager,
+            JwtService jwtService,
             CoreBankingDbContext coreBankingDbContext,
             IEmailSenderr emailSender,
             EmailTemplateService emailTemplateService,
-            IMediator mediator
+            IMediator mediator,
+            IPayStackService paystackService
+
             )
         {
             _userManager = userManager;
@@ -49,9 +53,10 @@ namespace CoreBanking.Api.Controllers
             _emailSender = emailSender;
             _emailTemplateService = emailTemplateService;
             _mediator = mediator;
+            _paystackService = paystackService;
         }
-        
-        [HttpPost("customer/register")]
+
+            [HttpPost("customer/register")]
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             var result = await _mediator.Send(command);
@@ -62,6 +67,24 @@ namespace CoreBanking.Api.Controllers
             return Ok(new { message = result.Message });
         }
 
+        [HttpPost("create-account")]
+        public async Task<IActionResult> CreateVirtualAccountForCustomer(CustomerDetails model)
+        {
+            // 1. Create a customer (or retrieve an existing one)
+            var customerCode = await _paystackService.CreateCustomerAsync(model.FirstName, model.LastName, model.Email, model.Phone);
+
+            // 2. Create the virtual account
+            var accountNumber = await _paystackService.CreateVirtualAccountAsync(customerCode);
+
+            return Ok(new { CustomerCode = customerCode, AccountNumber = accountNumber });
+        }
+        public class CustomerDetails
+        {
+            public String FirstName { get; set; }   
+            public String LastName { get; set; } = string.Empty;
+            public String Email { get; set; }   
+            public String Phone { get; set; } = string.Empty;
+        }
 
 
         [HttpPost("customer/login")]

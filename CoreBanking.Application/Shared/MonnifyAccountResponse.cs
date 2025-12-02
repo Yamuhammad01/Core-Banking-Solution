@@ -13,6 +13,14 @@ namespace CoreBanking.Application.Shared
         public string BankName { get; set; }
         public string ErrorMessage { get;  set; }
     }
-    
+    public class PaystackAccountResponse
+    {
+        public bool Success { get; set; }
+        public string AccountNumber { get; set; }
+        public string BankName { get; set; }
+        public string AccountName { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
 
 }
