@@ -9,7 +9,7 @@ using Dapper;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreBanking.Infrastructure.Messaging
+namespace CoreBanking.Infrastructure.Messaging.Consumer
 {
     public class RegistrationConsumer : BackgroundService
     {

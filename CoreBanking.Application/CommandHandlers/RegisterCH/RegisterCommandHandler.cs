@@ -1,18 +1,20 @@
-﻿using CoreBanking.Application.Common;
+﻿using CoreBanking.Application.Command.EmailConfirmationCommand;
+using CoreBanking.Application.Command.RegisterCommand;
+using CoreBanking.Application.Common;
+using CoreBanking.Application.Interfaces.IMailServices;
+using CoreBanking.Application.Interfaces.IServices;
+using CoreBanking.Domain.Entities;
+using CoreBanking.DTOs.Events;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoreBanking.Domain.Entities;
-using Microsoft.Win32;
-using Microsoft.EntityFrameworkCore;
-using CoreBanking.Application.Interfaces.IServices;
-using CoreBanking.Application.Interfaces.IMailServices;
-using CoreBanking.Application.Command.RegisterCommand;
-using CoreBanking.Application.Command.EmailConfirmationCommand;
 
 namespace CoreBanking.Application.CommandHandlers.RegisterCH
 {
@@ -24,13 +26,15 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly IEmailSenderr _emailSender;
         private readonly IUnitOfWork _uow;
+        private readonly IPublishEndpoint _publishEndpoint;
 
         public RegisterCommandHandler(UserManager<Customer> userManager,
             IMediator mediator,
             IBankingDbContext bankingDbContext,
             IEmailTemplateService emailTemplateService,
             IEmailSenderr emailSender,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IPublishEndpoint publishEndpoint)
         {
             _userManager = userManager;
             _mediator = mediator;
@@ -38,6 +42,7 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
             _emailTemplateService = emailTemplateService;
             _emailSender = emailSender;
             _uow = unitOfWork;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -78,39 +83,24 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 };
 
                 _dbContext.BankAccounts.Add(bankAccount);
-               // await _dbContext.SaveChangesAsync(cancellationToken);
+                // await _dbContext.SaveChangesAsync(cancellationToken);
 
-                var emailBody = await _emailTemplateService.GetWelcomeTemplateAsync(
-                 user.FirstName, user.LastName, bankAccount.AccountNumber, bankAccount.Currency); // get the placeholder to use in the template
-
-                var message = new Message(
-                    new string[] { request.Email },
-                    "Welcome to CoreBanking",
-                    emailBody
-                );
-
-                bool emailSentSuccessfully = true;
-                try
+                // Publish UserCreated event
+                await _publishEndpoint.Publish(new UserCreated
                 {
-                    await _emailSender.SendEmailAsync(message);
-                }
-                catch (Exception)
+                    UserId = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    AccountNumber = bankAccount.AccountNumber,
+                    Currency = bankAccount.Currency
+                }, context =>
                 {
-                    emailSentSuccessfully = false;
-                }
+                    context.MessageId = Guid.NewGuid();
+                });
 
-                if (!emailSentSuccessfully)
-                {
-                    // if Email service failed, then rollback all
-                    await _uow.RollbackAsync();
-
-                    // delete the user from Identity (if persisted)
-                    await _userManager.DeleteAsync(user);
-
-                    return Result.Failure("Email service not available. Ensure you are connected to the internet.");
-                }
                 // Send confirmation code (only if email was sent successfully)
-                await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
+                //  await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
 
                 //commit everything 
                 await _uow.CommitAsync();

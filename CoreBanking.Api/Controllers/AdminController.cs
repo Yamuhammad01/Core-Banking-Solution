@@ -8,6 +8,7 @@ using CoreBanking.DTOs.TransactionDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Octokit;
 using System.Security.Claims;
 
 namespace CoreBanking.Api.Controllers
@@ -20,13 +21,16 @@ namespace CoreBanking.Api.Controllers
         private readonly AccountService _accountService;
         private readonly TransactionService _transactionService;
         private readonly AdminService _adminService;
+        private readonly IEmailSenderr _emailSenderr;
         public AdminController(AccountService accountService,
             TransactionService transactionService,
-            AdminService adminService) 
+            AdminService adminService,
+            IEmailSenderr emailSenderr) 
         { 
             _accountService = accountService;
             _transactionService = transactionService;
             _adminService = adminService;
+            _emailSenderr = emailSenderr;
         }
 
         // get all customers 
@@ -139,6 +143,17 @@ namespace CoreBanking.Api.Controllers
         public async Task<IActionResult> FreezeAccountAsync(string email)
         {
             var result = await _adminService.FreezeAccountAsync(email);
+            var html = $@"
+            <p>Hi {email},</p>
+            <p>Your Core banking Account has been frozen due to suspicious activity. Co.</p>
+            <p> Contact the bank for more information </ p >";
+
+            var message = new Message(
+               new string[] { email },          // recipients
+                 "Account Frozed",                  // subject
+               html                                   // body/content
+            );
+            await _emailSenderr.SendEmailAsync(message);
             return result.Succeeded ? Ok(result) : BadRequest(result);
         }
 

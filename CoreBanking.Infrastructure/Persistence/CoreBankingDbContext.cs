@@ -11,6 +11,8 @@ using CoreBanking.Domain.Entities;
 using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CoreBanking.Application.Interfaces.IServices;
+using MassTransit.EntityFrameworkCoreIntegration;
+
 
 namespace CoreBanking.Infrastructure.Persistence
 {
@@ -47,6 +49,7 @@ namespace CoreBanking.Infrastructure.Persistence
          .HasOne(al => al.Customers)
          .WithMany(s => s.Transactions)
          .HasForeignKey(al => al.UserId);
+
 
         }
       

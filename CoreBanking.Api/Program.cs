@@ -13,7 +13,7 @@ using CoreBanking.DTOs;
 using CoreBanking.Infrastructure.Configuration;
 using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.Infrastructure.Identity;
-using CoreBanking.Infrastructure.Messaging;
+using CoreBanking.Infrastructure.Messaging.Consumer;
 using CoreBanking.Infrastructure.Persistence;
 using CoreBanking.Infrastructure.Repository;
 using CoreBanking.Infrastructure.Services;
@@ -37,6 +37,7 @@ using System.Text;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CoreBanking.Infrastructure.Messaging.Consumers;
 
 
 
@@ -121,6 +122,7 @@ builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
 builder.Services.AddHostedService<RegistrationConsumer>();
+builder.Services.AddMassTransitServices(); // MassTransit config
 //builder.Services.AddHttpClient<IVirtualAccountService, PaystackService>();
 builder.Services.Configure<PaystackSettings>(
     builder.Configuration.GetSection("Paystack"));
