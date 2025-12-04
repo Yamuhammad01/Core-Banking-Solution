@@ -100,7 +100,7 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 });
 
                 // Send confirmation code (only if email was sent successfully)
-                //  await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
+                 await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
 
                 //commit everything 
                 await _uow.CommitAsync();

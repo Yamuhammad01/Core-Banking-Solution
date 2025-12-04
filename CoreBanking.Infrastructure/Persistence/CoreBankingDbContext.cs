@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CoreBanking.Application.Interfaces.IServices;
 using MassTransit.EntityFrameworkCoreIntegration;
+using MassTransit;
 
 
 namespace CoreBanking.Infrastructure.Persistence
@@ -24,7 +25,7 @@ namespace CoreBanking.Infrastructure.Persistence
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<EmailConfirmation> EmailConfirmations { get; set; } = default!;
-
+      
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
 
@@ -49,6 +50,8 @@ namespace CoreBanking.Infrastructure.Persistence
          .HasOne(al => al.Customers)
          .WithMany(s => s.Transactions)
          .HasForeignKey(al => al.UserId);
+
+            
 
 
         }
