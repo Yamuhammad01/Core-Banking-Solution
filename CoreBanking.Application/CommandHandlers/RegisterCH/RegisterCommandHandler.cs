@@ -86,7 +86,7 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 // await _dbContext.SaveChangesAsync(cancellationToken);
 
                 // Publish UserCreated event
-                await _publishEndpoint.Publish(new UserCreated
+               /* await _publishEndpoint.Publish(new UserCreated
                 {
                     UserId = user.Id,
                     Email = user.Email,
@@ -97,10 +97,10 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 }, context =>
                 {
                     context.MessageId = Guid.NewGuid();
-                });
+                }); */
 
                 // Send confirmation code (only if email was sent successfully)
-                 await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
+                // await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
 
                 //commit everything 
                 await _uow.CommitAsync();

@@ -56,6 +56,7 @@ namespace CoreBanking.Api.Controllers
             _paystackService = paystackService;
         }
 
+       
             [HttpPost("customer/register")]
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
@@ -93,10 +94,10 @@ namespace CoreBanking.Api.Controllers
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return Unauthorized("Invalid credentials");
 
-            if (!user.EmailConfirmed)
+           /* if (!user.EmailConfirmed)
             {
                 return BadRequest("Verify your email before login please");
-            }
+            } */
             //check if account is active
             if (!user.IsActive)
             {
