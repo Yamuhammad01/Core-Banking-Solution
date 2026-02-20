@@ -1,4 +1,4 @@
-![IMG_8352-1](https://github.com/user-attachments/assets/f2d1a4cb-2e6b-43d9-b111-3d1e68a8af42)![IMG_8352-1](https://github.com/user-attachments/assets/009facf1-0c7a-4fd2-a734-0ff3d49d0b21)# Core Banking Solution
+(https://github.com/user-attachments/assets/f2d1a4cb-2e6b-43d9-b111-3d1e68a8af42)![IMG_8352-1](https://github.com/user-attachments/assets/009facf1-0c7a-4fd2-a734-0ff3d49d0b21)# Core Banking Solution
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/) 
 [![C#](https://img.shields.io/badge/C%23-8.0-green)](https://learn.microsoft.com/en-us/dotnet/csharp/) 
@@ -11,7 +11,8 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 
 ## Table of Contents
 
-- [Overview](#overview)  
+- [Overview](#overview)
+- [Project Screenshots](#project-screenshots)
 - [Features](#features)  
 - [Architecture](#architecture)  
 - [Folder Structure](#folder-structure)  
@@ -39,6 +40,25 @@ It demonstrates:
 - Secure authentication & authorization with **ASP.NET Core Identity** and **JWT**  
 - RESTful APIs 
 - Automated validation pipelines and error handling  
+
+---
+
+## Project Screenshots
+
+### Swagger Documentation
+![IMG_8352-1](https://github.com/user-attachments/assets/d0c630ce-f746-4a16-a645-d54879c5d230)
+
+![IMG_8353](https://github.com/user-attachments/assets/be12d082-8cdd-44ab-b5e5-ae4fbd8b429b)
+
+
+###  Credit and Debit Alert 
+![IMG_8282](https://github.com/user-attachments/assets/2b75a791-fa05-48c0-933b-57a6fbfee827)
+![IMG_8283](https://github.com/user-attachments/assets/58a305cc-e4a5-46c7-9590-ae446b6b4ad6)
+
+### 🔄 Transfer Funds (Request and Response)
+
+![373d15f7-8fc1-4244-b0ea-270fb3bc1ea0](https://github.com/user-attachments/assets/05883d35-9075-435a-bc99-43ad8a31b2d2)
+![afe7dcbe-e736-427d-9eee-e9f613fe3b50](https://github.com/user-attachments/assets/b7fbcd02-5add-481f-b62d-289d80f013b2)
 
 ---
 
