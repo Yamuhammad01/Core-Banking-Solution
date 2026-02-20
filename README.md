@@ -39,7 +39,6 @@ It demonstrates:
 - Secure authentication & authorization with **ASP.NET Core Identity** and **JWT**  
 - RESTful APIs 
 - Automated validation pipelines and error handling  
-![Uploading IMG_8352-1.jpeg…]()
 
 ---
 
