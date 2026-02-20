@@ -1,4 +1,4 @@
-# Core Banking Solution
+![IMG_8352-1](https://github.com/user-attachments/assets/f2d1a4cb-2e6b-43d9-b111-3d1e68a8af42)![IMG_8352-1](https://github.com/user-attachments/assets/009facf1-0c7a-4fd2-a734-0ff3d49d0b21)# Core Banking Solution
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/) 
 [![C#](https://img.shields.io/badge/C%23-8.0-green)](https://learn.microsoft.com/en-us/dotnet/csharp/) 
@@ -39,6 +39,7 @@ It demonstrates:
 - Secure authentication & authorization with **ASP.NET Core Identity** and **JWT**  
 - RESTful APIs 
 - Automated validation pipelines and error handling  
+![Uploading IMG_8352-1.jpeg…]()
 
 ---
 
