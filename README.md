@@ -46,14 +46,16 @@ It demonstrates:
 ## Project Screenshots
 
 ### Swagger Documentation
-![IMG_8352-1](https://github.com/user-attachments/assets/d0c630ce-f746-4a16-a645-d54879c5d230)
-
-![IMG_8353](https://github.com/user-attachments/assets/be12d082-8cdd-44ab-b5e5-ae4fbd8b429b)
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d0c630ce-f746-4a16-a645-d54879c5d230" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/be12d082-8cdd-44ab-b5e5-ae4fbd8b429b" width="45%" />
+</p>
 
 ###  Credit and Debit Alert 
-![IMG_8282](https://github.com/user-attachments/assets/2b75a791-fa05-48c0-933b-57a6fbfee827)
-![IMG_8283](https://github.com/user-attachments/assets/58a305cc-e4a5-46c7-9590-ae446b6b4ad6)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2b75a791-fa05-48c0-933b-57a6fbfee827" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/58a305cc-e4a5-46c7-9590-ae446b6b4ad6" width="45%" />
+</p>
 
 ### 🔄 Transfer Funds (Request and Response)
 
