@@ -57,8 +57,10 @@ It demonstrates:
 
 ### 🔄 Transfer Funds (Request and Response)
 
-![373d15f7-8fc1-4244-b0ea-270fb3bc1ea0](https://github.com/user-attachments/assets/05883d35-9075-435a-bc99-43ad8a31b2d2)
-![afe7dcbe-e736-427d-9eee-e9f613fe3b50](https://github.com/user-attachments/assets/b7fbcd02-5add-481f-b62d-289d80f013b2)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/05883d35-9075-435a-bc99-43ad8a31b2d2" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b7fbcd02-5add-481f-b62d-289d80f013b2" width="45%" />
+</p>
 
 ---
 
