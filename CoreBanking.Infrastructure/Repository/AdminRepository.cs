@@ -4,7 +4,6 @@ using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.DTOs.AccountDto;
 using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

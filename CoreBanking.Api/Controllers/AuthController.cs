@@ -94,6 +94,7 @@ namespace CoreBanking.Api.Controllers
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return Unauthorized("Invalid credentials");
 
+            // confirm email before login 
            /* if (!user.EmailConfirmed)
             {
                 return BadRequest("Verify your email before login please");

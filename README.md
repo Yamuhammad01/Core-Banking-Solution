@@ -117,7 +117,7 @@ CoreBankingSolution/
 • Repository Pattern & Dependency Injection
 • Command Query Responsibility Segregation (CQRS)
 • Unit of Work & Database Transactions
-• SendGrid SMTP (for email services) 
+• MailKit SMTP via Brevo (free-forever email service)
 ```
 
 ## Live Link
@@ -153,9 +153,28 @@ RabbitMQ is **optional**:
 | `RabbitMq__Queue` / `RabbitMq__Exchange` / `RabbitMq__RoutingKey` | `registration.queue` / `corebank.exchange` / `registration.create` | Optional overrides |
 | `RabbitMq__PrefetchCount` | `10` | Optional |
 
-Because `appsettings.json` is not deployed, also verify the remaining variables: `ConnectionStrings__DefaultConnection`, `Monnify__ApiKey`/`Monnify__SecretKey`/`Monnify__BaseUrl`/`Monnify__ContractCode`, `JwtSettings__Key`/`JwtSettings__Issuer`/`JwtSettings__Audience`, `Admin__Email`/`Admin__Password`/`Admin__UserName`, `Paystack__SecretKey`/`Paystack__PublicKey`/`Paystack__BaseUrl` and `EmailConfiguration__From`/`EmailConfiguration__SendGridApiKey`.
+Because `appsettings.json` is not deployed, also verify the remaining variables: `ConnectionStrings__DefaultConnection`, `Monnify__ApiKey`/`Monnify__SecretKey`/`Monnify__BaseUrl`/`Monnify__ContractCode`, `JwtSettings__Key`/`JwtSettings__Issuer`/`JwtSettings__Audience`, `Admin__Email`/`Admin__Password`/`Admin__UserName`, `Paystack__SecretKey`/`Paystack__PublicKey`/`Paystack__BaseUrl` and the email variables below.
 
-### 3. Expected startup logs
+### 3. Email (Brevo free-forever SMTP)
+
+Email sending uses MailKit SMTP (no SendGrid trial/credit expiry — Brevo's free plan is 300 emails/day forever, no credit card).
+
+1. Sign up at [brevo.com](https://www.brevo.com/) (free plan) → `Settings > Senders & IP` → add and verify your sender address.
+2. `Settings > SMTP & API` → copy the **SMTP Key** (shown once) and your SMTP login.
+3. Set the Render environment variables:
+
+| Variable | Example | Notes |
+|---|---|---|
+| `EmailConfiguration__From` | `corebankingdemo@gmail.com` | Must be a verified Brevo sender |
+| `EmailConfiguration__SmtpHost` | `smtp-relay.brevo.com` | Brevo SMTP relay |
+| `EmailConfiguration__SmtpPort` | `587` | STARTTLS |
+| `EmailConfiguration__SmtpUser` | `your-brevo-login@example.com` | From `SMTP & API` |
+| `EmailConfiguration__SmtpPassword` | `<smtp-key>` | The SMTP key (not your account password) |
+| `EmailConfiguration__EnableSsl` | `true` | STARTTLS on port 587 |
+
+If `SmtpHost` is unset the API still starts — emails are only attempted when a send is triggered, and a clear configuration error is logged. Any other free SMTP provider works with the same keys (Mailjet `in-v3.mailjet.com:587`, Gmail `smtp.gmail.com:587` + App Password).
+
+### 4. Expected startup logs
 
 | Situation | Log output |
 |---|---|
