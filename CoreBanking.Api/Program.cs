@@ -1,5 +1,6 @@
 using CoreBanking.Api.Extensions;
 using CoreBanking.Api.Swagger;
+using CoreBanking.Application.Command.RegisterCommand;
 using CoreBanking.Application.Common;
 using CoreBanking.Application.Identity;
 using CoreBanking.Application.Interfaces.IMailServices;
@@ -13,7 +14,6 @@ using CoreBanking.DTOs;
 using CoreBanking.Infrastructure.Configuration;
 using CoreBanking.Infrastructure.EmailServices;
 using CoreBanking.Infrastructure.Identity;
-using CoreBanking.Infrastructure.Messaging.Consumer;
 using CoreBanking.Infrastructure.Persistence;
 using CoreBanking.Infrastructure.Repository;
 using CoreBanking.Infrastructure.Services;
@@ -38,8 +38,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CoreBanking.Infrastructure.Messaging.Consumers;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,8 +119,27 @@ builder.Services.AddScoped<ITransactionPinService, TransactionPinService>();
 builder.Services.AddScoped<ITransactionEmailService, TransactionEmailService>();
 builder.Services.AddScoped<ICodeHasher, CodeHasher>();
 builder.Services.AddScoped<IPinValidationService, PinValidationService>();
-builder.Services.AddHostedService<RegistrationConsumer>();
-builder.Services.AddMassTransitServices(); // MassTransit config
+// ---- RabbitMQ (optional, env-var friendly) --------------------------------------
+// Local: appsettings.json "RabbitMq" section.
+// Render: environment variables, e.g. RabbitMq__Url=amqps://user:pass@host/vhost (CloudAMQP)
+//         or RabbitMq__Host / RabbitMq__Port / RabbitMq__User / RabbitMq__Password.
+//         RabbitMq__Enabled=false runs the API without a broker.
+var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>()
+    ?? new RabbitMqSettings();
+
+builder.Services.AddSingleton(rabbitMqSettings);
+
+// RabbitMQ outages must never take the API down: ignore background service exceptions instead of throwing.
+// BrokerUnreachableException, so worker failures must never stop the host.
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+
+// The MassTransit bus starts in the background; host startup must not depend on the broker.
+builder.Services.Configure<MassTransit.MassTransitHostOptions>(options => options.WaitUntilStarted = false);
+
+builder.Services.AddMassTransitServices(rabbitMqSettings); // MassTransit config
 //builder.Services.AddHttpClient<IVirtualAccountService, PaystackService>();
 builder.Services.Configure<PaystackSettings>(
     builder.Configuration.GetSection("Paystack"));
@@ -201,38 +218,79 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.MapPost("/api/customerrs", async (CustomerDto dto) =>
+app.MapPost("/api/customerrs", async (
+    CustomerDto dto,
+    RabbitMqSettings rabbitMq,
+    IMediator mediator,
+    ILoggerFactory loggerFactory) =>
 {
-    var factory = new ConnectionFactory()
-    {
-        HostName = "localhost",
-        UserName = "guest",
-        Password = "guest",
-        Port = 5672
-    };
+    var logger = loggerFactory.CreateLogger("CustomerRegistration");
 
-    // await async connection
-    await using var connection = await factory.CreateConnectionAsync();
+    if (rabbitMq.IsBrokerConfigured)
+    {
+        try
+        {
+            await PublishRegistrationMessageAsync(dto, rabbitMq);
+            return Results.Accepted();
+        }
+        catch (Exception ex)
+        {
+            // Broker configured but unreachable: degrade gracefully instead of failing the request.
+            logger.LogError(ex, "Failed to publish the registration message to RabbitMQ. Running the registration in-process instead.");
+        }
+    }
+    else
+    {
+        logger.LogWarning("RabbitMQ is not configured; running the registration in-process.");
+    }
+
+    // Same flow the queue consumer uses (CoreBanking.Application RegisterCommandHandler):
+    // Identity user + bank account, so registration works even without a broker.
+    var result = await mediator.Send(new RegisterCommand
+    {
+        FirstName = dto.FirstName,
+        LastName = dto.LastName,
+        Email = dto.Email,
+        Password = dto.Password,
+        ConfirmPassword = dto.ConfirmPassword,
+        PhoneNumber = dto.PhoneNumber
+    });
+
+    if (!result.Succeeded)
+    {
+        logger.LogWarning("In-process registration failed for {Email}: {Reason}", dto.Email, result.Message);
+        return Results.BadRequest(new { message = result.Message });
+    }
+
+    return Results.Accepted(value: new
+    {
+        message = result.Message,
+        note = "Processed in-process because no message broker is available."
+    });
+});
+
+static async Task PublishRegistrationMessageAsync(CustomerDto dto, RabbitMqSettings rabbitMq)
+{
+    var factory = rabbitMq.CreateConnectionFactory();
+
+    await using var connection = await factory.CreateConnectionAsync("CoreBanking.Api:CustomerPublish");
     await using var channel = await connection.CreateChannelAsync();
 
     await channel.ExchangeDeclareAsync(
-        exchange: "corebank.exchange",
+        exchange: rabbitMq.Exchange,
         type: ExchangeType.Direct,
-        durable: true
-    );
+        durable: true);
 
     await channel.QueueDeclareAsync(
-        queue: "registration.queue",
-        durable: true,
+        queue: rabbitMq.Queue,
+        durable: rabbitMq.DurableQueue,
         exclusive: false,
-        autoDelete: false
-    );
+        autoDelete: false);
 
     await channel.QueueBindAsync(
-        queue: "registration.queue",
-        exchange: "corebank.exchange",
-        routingKey: "registration.create"
-    );
+        queue: rabbitMq.Queue,
+        exchange: rabbitMq.Exchange,
+        routingKey: rabbitMq.RoutingKey);
 
     var message = new CustomerCreatedMessage(
         dto.FirstName,
@@ -240,22 +298,17 @@ app.MapPost("/api/customerrs", async (CustomerDto dto) =>
         dto.Email,
         dto.Password,
         dto.ConfirmPassword,
-        dto.PhoneNumber
-    );
+        dto.PhoneNumber);
 
-    var json = JsonSerializer.Serialize(message);
-    var body = Encoding.UTF8.GetBytes(json);
+    var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
     await channel.BasicPublishAsync(
-         exchange: "corebank.exchange",
-         routingKey: "registration.create",
-         mandatory: false,
-         body: body,
-        cancellationToken: CancellationToken.None
-    );
-
-    return Results.Accepted();
-});
+        exchange: rabbitMq.Exchange,
+        routingKey: rabbitMq.RoutingKey,
+        mandatory: false,
+        body: body,
+        cancellationToken: CancellationToken.None);
+}
 
 
 using (var scope = app.Services.CreateScope())

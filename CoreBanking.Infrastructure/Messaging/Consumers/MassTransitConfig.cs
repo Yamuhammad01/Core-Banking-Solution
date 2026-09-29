@@ -1,104 +1,55 @@
-﻿using CoreBanking.Infrastructure.Persistence;
+﻿using CoreBanking.Infrastructure.Configuration;
 using MassTransit;
-using MassTransit.RabbitMqTransport;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassTransit.EntityFrameworkCoreIntegration;
-using System.Data;
 
 namespace CoreBanking.Infrastructure.Messaging.Consumers
 {
     public static class MassTransitConfig
     {
-        public static void AddMassTransitServices(this IServiceCollection services)
+        public static void AddMassTransitServices(this IServiceCollection services, RabbitMqSettings settings)
         {
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<UserCreatedConsumer>();
 
-                x.UsingRabbitMq((context, cfg) =>
+                if (settings.IsBrokerConfigured)
                 {
-                    cfg.Host("localhost", "/", h =>
+                    x.UsingRabbitMq((context, cfg) =>
                     {
-                        h.Username("guest");
-                        h.Password("guest");
-                    });
-                    cfg.ReceiveEndpoint("user-created-dlq", e => { });
-
-                    cfg.ReceiveEndpoint("user-created-queue", e =>
-                    {
-                        // configure consumer
-                        e.ConfigureConsumer<UserCreatedConsumer>(context);
-
-                        // ensure messages are persisted 
-                        //e.Durable = true;
-
-                        // Retry policy: retry 30 times, 15s interval
-                        e.UseMessageRetry(r => r.Interval(30, TimeSpan.FromSeconds(10)));
-
-                        cfg.UseDelayedMessageScheduler();
-
-                    
-                        // 
-                        /*   e.UseEntityFrameworkOutbox<CoreBankingDbContext>(o =>
+                        if (!string.IsNullOrWhiteSpace(settings.Url))
+                        {
+                            // Full connection string, e.g. amqps://user:pass@host/vhost (CloudAMQP)
+                            cfg.Host(new Uri(settings.Url));
+                        }
+                        else
+                        {
+                            // amqp://host:5672 (or amqps://host:5671 when ssl is enabled)
+                            cfg.Host(new Uri(settings.BuildEndpointUri()), h =>
                             {
-                                o.QueryDelay = TimeSpan.FromSeconds(1);
-                                o.OutboxEntityType = typeof(OutboxState);
-                                o.UseSqlServer();
+                                h.Username(settings.User);
+                                h.Password(settings.Password);
                             });
+                        }
 
+                        cfg.ReceiveEndpoint("user-created-dlq", e => { });
 
-                            //e.UseInMemoryOutbox();
-                            e.DiscardFaultedMessages();
-
-
-
-                            // Configure dead-letter queue automatically
-                            //e.BindDeadLetterQueue("user-created-queue");
-
-                        });
-
-                        cfg.UseEntityFrameworkOutbox<CoreBankingDbContext>(o =>
+                        cfg.ReceiveEndpoint("user-created-queue", e =>
                         {
-                            o.QueryDelay = TimeSpan.FromSeconds(1);
-                            o.OutboxEntityType = typeof(OutboxState);   // use your custom entity
-                            o.UseSqlServer();
+                            e.ConfigureConsumer<UserCreatedConsumer>(context);
+
+                            // Retry policy: 30 attempts, 10s apart
+                            e.UseMessageRetry(r => r.Interval(30, TimeSpan.FromSeconds(10)));
                         });
-
-
-
-
-                        // standard retry policy 
-                        /* cfg.UseMessageRetry(r =>
-                        {
-                            // Layer 1: quick retries
-                            r.Intervals(
-                                TimeSpan.FromSeconds(1),
-                                TimeSpan.FromSeconds(3),
-                                TimeSpan.FromSeconds(9)
-                            );
-
-                            // Layer 2: delayed retries
-                            r.Intervals(
-                                TimeSpan.FromMinutes(1),
-                                TimeSpan.FromMinutes(3),
-                                TimeSpan.FromMinutes(5),
-                                TimeSpan.FromMinutes(8),
-                                TimeSpan.FromMinutes(12),
-                                TimeSpan.FromMinutes(15)
-                            );
-                        }); */
-
-
                     });
-                });
-
-                //services.AddMassTransitHostedService();
+                }
+                else
+                {
+                    // No broker configured (e.g. Render without RabbitMQ env vars):
+                    // keep the bus and IPublishEndpoint resolvable with the in-memory transport
+                    // so no connection is ever attempted against localhost.
+                    x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+                }
             });
         }
     }

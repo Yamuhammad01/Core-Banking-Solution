@@ -15,6 +15,21 @@
     "Audience": "",
     "DurationInMinutes": 60
   },
+  "RabbitMq": {
+    "Enabled": true,
+    "Url": "",
+    "Host": "",
+    "Port": 5672,
+    "UseSsl": false,
+    "User": "guest",
+    "Password": "guest",
+    "VirtualHost": "/",
+    "Exchange": "corebank.exchange",
+    "Queue": "registration.queue",
+    "RoutingKey": "registration.create",
+    "PrefetchCount": 10,
+    "DurableQueue": true
+  },
   "ConnectionStrings": {
     "DefaultConnection": ""
   },

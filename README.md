@@ -18,6 +18,7 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 - [Folder Structure](#folder-structure)  
 - [Tech Stack](#tech-stack)
 - [Live Link](#live-link) 
+- [Deployment (Render + CloudAMQP)](#deployment-render--cloudamqp)
 - [Installation & Setup](#installation--setup)  
 - [Database Setup](#database-setup)  
 - [API Documentation](#api-documentation)
@@ -121,6 +122,48 @@ CoreBankingSolution/
 
 ## Live Link
 • Live Link (Swagger Docs): https://core-banking-solution.onrender.com/swagger/index.html <br>
+
+---
+
+## Deployment (Render + CloudAMQP)
+
+The API runs on **Render**. `appsettings.json` is git-ignored (see `.gitignore`), so **every setting must come from environment variables** in the Render dashboard.
+
+RabbitMQ is **optional**:
+
+- No broker configured → the API still starts on the in-memory MassTransit transport, and `POST /api/customerrs` falls back to **in-process registration** (`RegisterCommand` → Identity user + bank account), so registration never breaks.
+- Broker configured but temporarily unreachable → errors are logged, the API keeps serving traffic (it is no longer stopped by background-service failures; the bus also starts in the background via `WaitUntilStarted = false`).
+
+### 1. Create the broker (CloudAMQP free plan)
+
+1. Create a free **Little Lemur** instance at [cloudamqp.com](https://www.cloudamqp.com/).
+2. Copy the instance's **AMQP URL** — for example `amqps://user:pass@host/vhost` (the `amqps` scheme enables TLS automatically).
+
+> Want RabbitMQ on Render instead? Deploy [render-examples/rabbitmq](https://github.com/render-examples/rabbitmq) in the **same region**, then use the internal service hostname: `RabbitMq__Host=<service-slug>`, `RabbitMq__Port=5672`, `RabbitMq__User`, `RabbitMq__Password`, `RabbitMq__VirtualHost=/`.
+
+### 2. Render environment variables
+
+| Variable | Example | Notes |
+|---|---|---|
+| `RabbitMq__Url` | `amqps://user:pass@host/vhost` | Recommended (CloudAMQP) |
+| `RabbitMq__Host` / `RabbitMq__Port` | `my-broker-host` / `5672` | Alternative to `RabbitMq__Url` |
+| `RabbitMq__User` / `RabbitMq__Password` | `guest` / `guest` | Alternative to `RabbitMq__Url` |
+| `RabbitMq__VirtualHost` | `/` | Alternative to `RabbitMq__Url` |
+| `RabbitMq__Enabled` | `false` | Disables broker integration entirely |
+| `RabbitMq__Queue` / `RabbitMq__Exchange` / `RabbitMq__RoutingKey` | `registration.queue` / `corebank.exchange` / `registration.create` | Optional overrides |
+| `RabbitMq__PrefetchCount` | `10` | Optional |
+
+Because `appsettings.json` is not deployed, also verify the remaining variables: `ConnectionStrings__DefaultConnection`, `Monnify__ApiKey`/`Monnify__SecretKey`/`Monnify__BaseUrl`/`Monnify__ContractCode`, `JwtSettings__Key`/`JwtSettings__Issuer`/`JwtSettings__Audience`, `Admin__Email`/`Admin__Password`/`Admin__UserName`, `Paystack__SecretKey`/`Paystack__PublicKey`/`Paystack__BaseUrl` and `EmailConfiguration__From`/`EmailConfiguration__SendGridApiKey`.
+
+### 3. Expected startup logs
+
+| Situation | Log output |
+|---|---|
+| Broker configured and reachable | `POST /api/customerrs` publishes to `registration.queue` and returns `202 Accepted`. |
+| No broker configured | `RabbitMQ is not configured — skipping publish and processing the registration in-process.` — registration still succeeds, API still healthy |
+| Broker temporarily down | `Failed to publish the registration message to RabbitMQ` — registration still succeeds in-process, API still healthy |
+
+For local development, run the bundled broker with `docker compose up -d rabbitmq` and keep the `RabbitMq:Host=localhost` default in `appsettings.json`.
 
 ## Installation & Setup
 
