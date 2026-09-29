@@ -10,9 +10,14 @@ namespace CoreBanking.Api.Extensions
             this IServiceCollection services, IConfiguration configuration)
 
         {
+            
             var emailConfig = configuration
                 .GetSection("EmailConfiguration")
-                .Get<EmailConfiguration>();
+                .Get<EmailConfiguration>() ?? new EmailConfiguration();
+
+            Console.WriteLine(string.IsNullOrWhiteSpace(emailConfig.SmtpHost)
+                ? "[Email] SMTP NOT configured — set EmailConfiguration__SmtpHost / __SmtpUser / __SmtpPassword."
+                : $"[Email] SMTP configured: {emailConfig.SmtpHost}:{emailConfig.SmtpPort}, From={emailConfig.From}, Ssl={emailConfig.EnableSsl}");
 
             services.AddSingleton(emailConfig);
             return services;

@@ -63,7 +63,7 @@ namespace CoreBanking.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to send transaction email: {ex.Message}");
+                _logger.LogError(ex, "Failed to send transaction email to {Email}", email);
             }
         }
     }
