@@ -11,7 +11,8 @@ A **robust backend solution for core banking operations**, built using **ASP.NET
 
 ## Table of Contents
 
-- [Overview](#overview)  
+- [Overview](#overview)
+- [Project Screenshots](#project-screenshots)
 - [Features](#features)  
 - [Architecture](#architecture)  
 - [Folder Structure](#folder-structure)  
@@ -39,6 +40,29 @@ It demonstrates:
 - Secure authentication & authorization with **ASP.NET Core Identity** and **JWT**  
 - RESTful APIs 
 - Automated validation pipelines and error handling  
+
+---
+
+## Project Screenshots
+
+### Swagger Documentation
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d0c630ce-f746-4a16-a645-d54879c5d230" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/be12d082-8cdd-44ab-b5e5-ae4fbd8b429b" width="45%" />
+</p>
+
+###  Credit and Debit Alert 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2b75a791-fa05-48c0-933b-57a6fbfee827" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/58a305cc-e4a5-46c7-9590-ae446b6b4ad6" width="45%" />
+</p>
+
+### 🔄 Transfer Funds (Request and Response)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/05883d35-9075-435a-bc99-43ad8a31b2d2" width="45%" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b7fbcd02-5add-481f-b62d-289d80f013b2" width="45%" />
+</p>
 
 ---
 
