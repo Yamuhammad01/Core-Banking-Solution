@@ -1,7 +1,6 @@
 ﻿using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Infrastructure.EmailServices;
 using Microsoft.Extensions.Logging;
-using NETCore.MailKit.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

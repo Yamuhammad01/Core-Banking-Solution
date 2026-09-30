@@ -100,16 +100,17 @@ namespace CoreBanking.Application.CommandHandlers.RegisterCH
                 }); 
 
                 // Send confirmation code (only if email was sent successfully)
-                 await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
+                // await _mediator.Send(new SendEmailCodeCommand { Email = user.Email }, cancellationToken);
 
                 //commit everything 
                 await _uow.CommitAsync();
 
-                return Result.Success("Registration successful! Please check your email (spam) for the confirmation code.");
+                return Result.Success("Registration successful! Please check your email (spam) to view your account number ");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _uow.RollbackAsync();
+                Console.WriteLine($"[Register] {request.Email} failed: {ex.Message}");
                 return Result.Failure($"Registration failed, Check your internet connection please");
             }
           

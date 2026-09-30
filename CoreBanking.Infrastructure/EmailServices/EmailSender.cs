@@ -1,45 +1,59 @@
 ﻿using CoreBanking.Application.Common;
 using CoreBanking.Application.Interfaces.IServices;
 using CoreBanking.Infrastructure.Configuration;
-using MailKit.Net.Smtp;
-using MimeKit;
-using SecureSocketOptions = MailKit.Security.SecureSocketOptions;
+using System.Text;
+using System.Text.Json;
 
 namespace CoreBanking.Application.Services
 {
+    /// <summary>
+    /// Sends transactional email through Brevo's HTTPS API (port 443).
+    /// SMTP cannot be used on Render's free tier: outbound connections to
+    /// SMTP ports 25/465/587 are blocked there (Render changelog, Sep 2025),
+    /// so this service uses Brevo's HTTPS API instead. SMTP is still supported for local development.
+    /// </summary>
     public class EmailSender : IEmailSenderr
     {
         private readonly EmailConfiguration _emailConfig;
-        public EmailSender(EmailConfiguration emailConfig)
+        private readonly HttpClient _httpClient;
+
+        public EmailSender(EmailConfiguration emailConfig, HttpClient httpClient)
         {
             _emailConfig = emailConfig;
+            _httpClient = httpClient;
         }
 
         public async Task SendEmailAsync(Message message)
         {
-            if (string.IsNullOrWhiteSpace(_emailConfig.SmtpHost))
+            if (string.IsNullOrWhiteSpace(_emailConfig.ApiKey))
                 throw new InvalidOperationException(
-                    "EmailConfiguration:SmtpHost is not configured. Set EmailConfiguration__SmtpHost (e.g. smtp-relay.brevo.com).");
+                    "EmailConfiguration:ApiKey is not configured. Set EmailConfiguration__ApiKey " +
+                    "(Brevo -> Settings -> SMTP & API -> API keys, value starts with \"xkeysib-\"). " +
+                    "SMTP keys (\"xsmtpsib-\") do NOT work with this API.");
 
-            var mimeMessage = new MimeMessage();
-            mimeMessage.From.Add(MailboxAddress.Parse(_emailConfig.From));
-            foreach (var recipient in message.To)
-                mimeMessage.To.Add(MailboxAddress.Parse(recipient.Address));
-            mimeMessage.Subject = message.Subject;
-            mimeMessage.Body = new BodyBuilder { HtmlBody = message.Content }.ToMessageBody();
+            if (string.IsNullOrWhiteSpace(_emailConfig.From))
+                throw new InvalidOperationException(
+                    "EmailConfiguration:From is not configured. Set EmailConfiguration__From to a verified Brevo sender.");
 
-            using var smtpClient = new SmtpClient();
-            var socketOptions = _emailConfig.EnableSsl
-                ? SecureSocketOptions.StartTls
-                : SecureSocketOptions.Auto;
+            var payload = new
+            {
+                sender = new { email = _emailConfig.From },
+                to = message.To.Select(a => new { email = a.Address, name = a.Name }).ToArray(),
+                subject = message.Subject,
+                htmlContent = message.Content
+            };
 
-            await smtpClient.ConnectAsync(_emailConfig.SmtpHost, _emailConfig.SmtpPort, socketOptions);
+            using var request = new HttpRequestMessage(HttpMethod.Post, _emailConfig.ApiUrl);
+            request.Headers.TryAddWithoutValidation("api-key", _emailConfig.ApiKey);
+            request.Headers.TryAddWithoutValidation("accept", "application/json");
+            request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-            if (!string.IsNullOrWhiteSpace(_emailConfig.SmtpUser))
-                await smtpClient.AuthenticateAsync(_emailConfig.SmtpUser, _emailConfig.SmtpPassword);
+            using var response = await _httpClient.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
 
-            await smtpClient.SendAsync(mimeMessage);
-            await smtpClient.DisconnectAsync(true);
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException(
+                    $"Brevo API returned {(int)response.StatusCode} ({response.ReasonPhrase}) for {_emailConfig.ApiUrl}: {body}");
         }
     }
 }

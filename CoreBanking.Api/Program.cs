@@ -47,7 +47,12 @@ builder.Services.AddDbContext<CoreBankingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-builder.Services.AddScoped<IEmailSenderr, EmailSender>();
+// Email goes through Brevo's HTTPS API (port 443). Render's free tier blocks
+// outbound SMTP ports 25/465/587, so no SMTP transport is used.
+builder.Services.AddHttpClient<IEmailSenderr, EmailSender>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 // port configuration for Render Deployment
 
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
@@ -75,7 +80,6 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<TransactionPinService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IEmailSenderr, EmailSender>();
 builder.Services.AddScoped(sp =>
     new EmailTemplateService(builder.Environment.ContentRootPath));
 

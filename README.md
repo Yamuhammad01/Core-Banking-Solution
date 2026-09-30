@@ -117,7 +117,7 @@ CoreBankingSolution/
 • Repository Pattern & Dependency Injection
 • Command Query Responsibility Segregation (CQRS)
 • Unit of Work & Database Transactions
-• MailKit SMTP via Brevo (free-forever email service)
+• Brevo HTTPS API (free-forever email service, works on Render free tier)
 ```
 
 ## Live Link
@@ -155,24 +155,21 @@ RabbitMQ is **optional**:
 
 Because `appsettings.json` is not deployed, also verify the remaining variables: `ConnectionStrings__DefaultConnection`, `Monnify__ApiKey`/`Monnify__SecretKey`/`Monnify__BaseUrl`/`Monnify__ContractCode`, `JwtSettings__Key`/`JwtSettings__Issuer`/`JwtSettings__Audience`, `Admin__Email`/`Admin__Password`/`Admin__UserName`, `Paystack__SecretKey`/`Paystack__PublicKey`/`Paystack__BaseUrl` and the email variables below.
 
-### 3. Email (Brevo free-forever SMTP)
+### 3. Email (Brevo free-forever HTTPS API)
 
-Email sending uses MailKit SMTP (no SendGrid trial/credit expiry — Brevo's free plan is 300 emails/day forever, no credit card).
+Email sending calls Brevo's transactional API over HTTPS/443 (free plan: 300 emails/day forever, no credit card). SMTP is deliberately **not** used: Render's free tier blocks outbound SMTP ports 25/465/587 (Render changelog, Sep 2025), so SMTP connections time out in production while working locally. The REST API on port 443 is not blocked.
 
 1. Sign up at [brevo.com](https://www.brevo.com/) (free plan) → `Settings > Senders & IP` → add and verify your sender address.
-2. `Settings > SMTP & API` → copy the **SMTP Key** (shown once) and your SMTP login.
+2. `Settings > SMTP & API > API keys` → generate an **API key** (shown once, starts with `xkeysib-`). SMTP keys (`xsmtpsib-`) do **not** work with the HTTP API.
 3. Set the Render environment variables:
 
 | Variable | Example | Notes |
 |---|---|---|
 | `EmailConfiguration__From` | `corebankingdemo@gmail.com` | Must be a verified Brevo sender |
-| `EmailConfiguration__SmtpHost` | `smtp-relay.brevo.com` | Brevo SMTP relay |
-| `EmailConfiguration__SmtpPort` | `587` | STARTTLS |
-| `EmailConfiguration__SmtpUser` | `your-brevo-login@example.com` | From `SMTP & API` |
-| `EmailConfiguration__SmtpPassword` | `<smtp-key>` | The SMTP key (not your account password) |
-| `EmailConfiguration__EnableSsl` | `true` | STARTTLS on port 587 |
+| `EmailConfiguration__ApiKey` | `xkeysib-...` | Brevo API key from `Settings > SMTP & API > API keys` |
+| `EmailConfiguration__ApiUrl` | `https://api.brevo.com/v3/smtp/email` | Optional — this is already the default |
 
-If `SmtpHost` is unset the API still starts — emails are only attempted when a send is triggered, and a clear configuration error is logged. Any other free SMTP provider works with the same keys (Mailjet `in-v3.mailjet.com:587`, Gmail `smtp.gmail.com:587` + App Password).
+If `ApiKey` is unset the API still starts — emails are only attempted when a send is triggered, and a clear configuration error is logged (`EmailConfiguration:ApiKey is not configured...`). When everything is set, startup logs show `[Email] Brevo API configured: https://api.brevo.com/v3/smtp/email, From=...`.
 
 ### 4. Expected startup logs
 

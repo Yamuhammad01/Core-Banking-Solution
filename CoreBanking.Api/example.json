@@ -7,6 +7,8 @@
   },
   "EmailConfiguration": {
     "From": "",
+    "ApiKey": "",
+    "ApiUrl": "https://api.brevo.com/v3/smtp/email",
     "SmtpHost": "",
     "SmtpPort": 587,
     "SmtpUser": "",

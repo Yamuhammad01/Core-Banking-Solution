@@ -15,9 +15,9 @@ namespace CoreBanking.Api.Extensions
                 .GetSection("EmailConfiguration")
                 .Get<EmailConfiguration>() ?? new EmailConfiguration();
 
-            Console.WriteLine(string.IsNullOrWhiteSpace(emailConfig.SmtpHost)
-                ? "[Email] SMTP NOT configured — set EmailConfiguration__SmtpHost / __SmtpUser / __SmtpPassword."
-                : $"[Email] SMTP configured: {emailConfig.SmtpHost}:{emailConfig.SmtpPort}, From={emailConfig.From}, Ssl={emailConfig.EnableSsl}");
+            Console.WriteLine(string.IsNullOrWhiteSpace(emailConfig.ApiKey)
+                ? "[Email] Brevo API NOT configured — set EmailConfiguration__ApiKey (xkeysib-...)."
+                : $"[Email] Brevo API configured: {emailConfig.ApiUrl}, From={emailConfig.From}");
 
             services.AddSingleton(emailConfig);
             return services;
